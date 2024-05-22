@@ -1,0 +1,41 @@
+name: 'Test File Suffix Inspector'
+description: 'Scans test files in src/test directories to ensure naming conventions, reporting any files missing specified suffixes.'
+inputs:
+  suffixes:
+    description: 'List of suffixes that test files should have, separated by commas (e.g., UnitTest,IntegrationTest).'
+    required: true
+    default: 'UnitTest,IntegrationTest'
+  include_directories:
+    description: 'List of directories to include in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
+    required: false
+    default: 'src/test'
+  excludes:
+    description: 'List of filenames to exclude from suffix checks, separated by commas (e.g., HelperUtils,Constants).'
+    required: false
+    default: ''
+  case_sensitivity:
+    description: 'Determines if the filename check should be case-sensitive.'
+    required: false
+    default: 'true'
+  logic:
+    description: 'Switch logic from suffix (end of filename) to contains (any part of filename). Set to true to enable contains logic.'
+    required: false
+    default: 'false'
+  report_format:
+    description: 'Specifies the format of the output report. Options: console, csv, and json.'
+    required: false
+    default: 'console'
+  verbose_logging:
+    description: 'Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.'
+    required: false
+    default: 'false'
+  fail_on_violations:
+    description: 'Set to true to fail the action if any convention violations are detected. Set to false to continue without failure.'
+    required: false
+    default: 'false'
+outputs:
+  conventions_violations:
+    description: 'Count of test files that do not comply with the specified suffix conventions.'
+runs:
+  using: 'node12'
+  main: 'index.js'
