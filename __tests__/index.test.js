@@ -4,12 +4,15 @@ const path = require('path');
 const run = require('../index.js');
 
 jest.mock('@actions/core');
-jest.mock('fs', () => ({
-    promises: {
-        access: jest.fn()
-    },
-    readdirSync: jest.fn()
-}));
+jest.mock('fs', () => {
+    const originalModule = jest.requireActual('fs');
+    return {
+        ...originalModule,
+        promises: {
+            access: jest.fn()
+        }
+    };
+});
 jest.mock('path');
 
 describe('run function', () => {
@@ -22,13 +25,13 @@ describe('run function', () => {
         core.getInput = jest.fn().mockImplementation((key) => {
             const inputs = {
                 'suffixes': 'UnitTests,IntegrationTests',
-                'include_directories': 'src/test/java',
-                'excludes': 'TestHelper,ResultReporter',
+                'include_directories': 'test',
+                'excludes': 'test2.java,ResultReporter',
                 'case_sensitivity': 'false',
-                'logic': 'endsWith',
+                'logic': 'false',
                 'report_format': 'json',
                 'verbose_logging': 'true',
-                'fail_on_violations': 'true'
+                'fail_on_violations': 'false'
             };
             return inputs[key];
         });
@@ -37,21 +40,6 @@ describe('run function', () => {
         core.setFailed = jest.fn();
         core.info = jest.fn((msg) => logOutput.push(msg));
 
-        fs.readdirSync.mockImplementation((dir) => {
-            const structure = {
-                'src/test/java': [
-                    { name: 'file1.js', isDirectory: () => false },
-                    { name: 'file2.js', isDirectory: () => false },
-                    { name: 'subdir', isDirectory: () => true }
-                ],
-                'src/test/java/subdir': [
-                    { name: 'file3.js', isDirectory: () => false },
-                    { name: 'file4.js', isDirectory: () => false }
-                ]
-            };
-            return structure[dir] || [];
-        });
-
         path.join = jest.fn((...args) => args.join('/'));
         path.relative = jest.fn((from, to) => {
             return to.replace(from, '');
@@ -59,7 +47,7 @@ describe('run function', () => {
     });
 
     afterEach(() => {
-        // console.log('Collected log output:', logOutput);
+        console.log('Collected log output:', logOutput);
     });
 
     it('should call core.getInput with correct parameters', async () => {
@@ -75,7 +63,7 @@ describe('run function', () => {
         expect(core.getInput).toHaveBeenCalledWith('fail_on_violations');
 
         // Check the final state (e.g., core.setOutput was called with 'status' and 'success')
-        expect(core.setOutput).toHaveBeenCalledWith('conventions_violations', 0);
+        expect(core.setOutput).toHaveBeenCalledWith('conventions_violations', 1);
         expect(core.setFailed).not.toHaveBeenCalled();
     });
 

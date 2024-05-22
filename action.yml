@@ -18,9 +18,9 @@ inputs:
     required: false
     default: 'true'
   logic:
-    description: 'Switch logic from suffix (end of filename) to contains (any part of filename). Set to true to enable contains logic.'
+    description: 'Switch logic from suffix (end of filename) to contains (any part of filename). Set to false to enable contains logic.'
     required: false
-    default: 'false'
+    default: 'true'
   report_format:
     description: 'Specifies the format of the output report. Options: console, csv, and json.'
     required: false

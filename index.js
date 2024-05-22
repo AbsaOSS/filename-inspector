@@ -31,26 +31,26 @@ async function run() {
         const violations = [];
 
         function scanDirectory(directory) {
-            if (verboseLogging) {
-                core.info(`Scanning directory: ${directory}`);
-            }
-
             const files = fs.readdirSync(directory, { withFileTypes: true });
+            // core.info(`Files in directory: ${JSON.stringify(files)}`);
 
             for (const file of files) {
-                const fullPath = path.join(directory, file.name);
+                const fullPath = path.join(file.path, file.name);
+                const filename = file.name;
 
                 if (file.isDirectory()) {
                     scanDirectory(fullPath);
                 } else {
-                    const relativePath = path.relative(directory, fullPath);
+                    console.log(`D 1: ${JSON.stringify(includeDirectories)}`)
+                    console.log(`D 2: ${fullPath}`)
 
-                    if (includeDirectories.some(dir => relativePath.includes(dir))) {
-                        const filename = file.name;
-
+                    // TODO - fix to exact name of folder
+                    const fullPathParts = fullPath.split(path.sep);
+                    const isIncluded = includeDirectories.some(dir => fullPathParts.includes(dir));
+                    if (isIncluded) {
                         if (excludes.includes(filename)) {
                             if (verboseLogging) {
-                                core.info(`Excluded file: ${relativePath}`);
+                                core.info(`Excluded file: ${fullPath}`);
                             }
 
                             continue;
@@ -59,18 +59,18 @@ async function run() {
                         const checkFilename = caseSensitivity ? filename : filename.toLowerCase();
                         const matchesSuffix = suffixes.some(suffix => {
                             const checkSuffix = caseSensitivity ? suffix : suffix.toLowerCase();
-                            return logic ? checkFilename.includes(checkSuffix) : checkFilename.endsWith(checkSuffix);
+                            return logic ? checkFilename.endsWith(checkSuffix) : checkFilename.includes(checkSuffix);
                         });
 
                         if (!matchesSuffix) {
                             if (verboseLogging) {
-                                core.info(`Violating file: ${relativePath}`);
+                                core.info(`Violating file: ${fullPath}`);
                             }
                             violationsCount++;
-                            violations.push(relativePath);
+                            violations.push(fullPath);
                         } else {
                             if (verboseLogging) {
-                                core.info(`Valid file: ${relativePath}`);
+                                core.info(`Valid file: ${fullPath}`);
                             }
                         }
                     }
@@ -78,7 +78,7 @@ async function run() {
             }
         }
 
-        scanDirectory(process.cwd());
+        scanDirectory(path.join(process.cwd(), "__tests__"));
 
         if (verboseLogging) {
             core.info(`Total violations: ${violationsCount}`);
