@@ -2,18 +2,7 @@ const core = require('@actions/core');
 const fs = require('fs');
 const path = require('path');
 const run = require('../index.js');
-
-jest.mock('@actions/core');
-jest.mock('fs', () => {
-    const originalModule = jest.requireActual('fs');
-    return {
-        ...originalModule,
-        promises: {
-            access: jest.fn()
-        }
-    };
-});
-jest.mock('path');
+const {mockCore, mockFs, mockPath, mockInputs} = require("./mocks");
 
 describe('run function', () => {
     let logOutput = [];
@@ -22,37 +11,99 @@ describe('run function', () => {
         jest.clearAllMocks();
         logOutput = [];
 
-        core.getInput = jest.fn().mockImplementation((key) => {
-            const inputs = {
-                'suffixes': 'UnitTests,IntegrationTests',
-                'include_directories': 'test',
-                'excludes': 'test2.java,ResultReporter',
-                'case_sensitivity': 'false',
-                'logic': 'false',
-                'report_format': 'json',
-                'verbose_logging': 'true',
-                'fail_on_violations': 'false'
-            };
-            return inputs[key];
-        });
+        mockCore();
+        mockFs();
+        mockPath();
 
-        core.setOutput = jest.fn();
-        core.setFailed = jest.fn();
-        core.info = jest.fn((msg) => logOutput.push(msg));
-
-        path.join = jest.fn((...args) => args.join('/'));
-        path.relative = jest.fn((from, to) => {
-            return to.replace(from, '');
-        });
+        core.info.mockImplementation((msg) => logOutput.push(msg));
     });
 
     afterEach(() => {
         console.log('Collected log output:', logOutput);
     });
 
-    it('should call core.getInput with correct parameters', async () => {
+    const inputConfigurations = [
+        {
+            description: 'default inputs only',
+            inputs: {
+                'suffixes': 'UnitTests,IntegrationTests',
+                'verbose_logging': 'true'
+            },
+            expectedOutput: 'success',
+            expectedViolations: 3
+        },
+        {
+            description: 'fail on violation',
+            inputs: {
+                'suffixes': 'UnitTests,IntegrationTests',
+                'fail_on_violations': 'true'
+            },
+            expectedOutput: 'fail',
+            expectedViolations: 0
+        },
+        {
+            description: 'custom include directories',
+            inputs: {
+                'suffixes': 'UnitTests,IntegrationTests',
+                'include_directories': 'src/another'
+            },
+            expectedOutput: 'success',
+            expectedViolations: 1
+        },
+        {
+            description: 'custom excludes',
+            inputs: {
+                'suffixes': 'UnitTests,IntegrationTests',
+                'excludes': 'test2.java',
+                'verbose_logging': 'true',
+            },
+            expectedOutput: 'success',
+            expectedViolations: 2
+        },
+        {
+            description: 'case insensitivity',
+            inputs: {
+                'suffixes': 'UnitTests,IntegrationTests',
+                'excludes': 'test2.java'
+            },
+            expectedOutput: 'success',
+            expectedViolations: 2
+        },
+        {
+            description: 'change detection logic',
+            inputs: {
+                'suffixes': 'Unitt',
+                'logic': 'false'
+            },
+            expectedOutput: 'success',
+            expectedViolations: 3
+        },
+        {
+            description: 'change report format - json',
+            inputs: {
+                'suffixes': 'UnitTests,IntegrationTests',
+                'report_format': 'json',
+            },
+            expectedOutput: 'success',
+            expectedViolations: 3
+        },
+        {
+            description: 'change report format - csv',
+            inputs: {
+                'suffixes': 'UnitTests,IntegrationTests',
+                'report_format': 'csv',
+            },
+            expectedOutput: 'success',
+            expectedViolations: 3
+        }
+    ];
+
+    test.each(inputConfigurations)('should handle $description', async ({ inputs, expectedOutput, expectedViolations }) => {
+        mockInputs(inputs);
+
         await run();
 
+        // const core = require('@actions/core');
         expect(core.getInput).toHaveBeenCalledWith('suffixes');
         expect(core.getInput).toHaveBeenCalledWith('include_directories');
         expect(core.getInput).toHaveBeenCalledWith('excludes');
@@ -62,10 +113,51 @@ describe('run function', () => {
         expect(core.getInput).toHaveBeenCalledWith('verbose_logging');
         expect(core.getInput).toHaveBeenCalledWith('fail_on_violations');
 
-        // Check the final state (e.g., core.setOutput was called with 'status' and 'success')
-        expect(core.setOutput).toHaveBeenCalledWith('conventions_violations', 1);
-        expect(core.setFailed).not.toHaveBeenCalled();
-    });
+        if (expectedOutput === 'success') {
+            expect(core.setOutput).toHaveBeenCalledWith('conventions_violations', expectedViolations);
+            expect(core.setFailed).not.toHaveBeenCalled();
+        } else {
+            expect(core.setFailed).toHaveBeenCalled();
+        }
 
-    // Add more tests here for different functionalities and edge cases
+        if (core.getInput("report_format") === 'json') {
+            const violationsFilePath = path.resolve(process.cwd(), 'violations.json');
+            if (fs.existsSync(violationsFilePath)) {
+                const violationsContent = fs.readFileSync(violationsFilePath, 'utf8');
+                const violations = JSON.parse(violationsContent);
+
+                expect(Array.isArray(violations["violations"])).toBe(true);
+                expect(violations["violations"].length).toBe(expectedViolations);
+
+                violations["violations"].forEach(violation => {
+                    expect(
+                        violation.includes('AnotherUnitt') ||
+                        violation.includes('t1.j') ||
+                        violation.includes('t2.j')
+                    ).toBe(true);
+                });
+            } else {
+                throw new Error('violations.json file does not exist');
+            }
+        } else if (core.getInput("report_format") === 'csv') {
+            const violationsFilePath = path.resolve(process.cwd(), 'violations.csv');
+            if (fs.existsSync(violationsFilePath)) {
+                const violationsContent = fs.readFileSync(violationsFilePath, 'utf8');
+                const violations = violationsContent.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+                expect(Array.isArray(violations)).toBe(true);
+                expect(violations.length).toBe(expectedViolations);
+
+                violations.forEach(violation => {
+                    expect(
+                        violation.includes('AnotherUnitt') ||
+                        violation.includes('t1.j') ||
+                        violation.includes('t2.j')
+                    ).toBe(true);
+                });
+            } else {
+                throw new Error('violations.csv file does not exist');
+            }
+        }
+    });
 });
