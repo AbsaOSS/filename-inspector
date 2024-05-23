@@ -41,5 +41,5 @@ outputs:
   conventions_violations:
     description: 'Count of test files that do not comply with the specified suffix conventions.'
 runs:
-  using: 'node12'
+  using: 'node20'
   main: 'dist/index.js'
