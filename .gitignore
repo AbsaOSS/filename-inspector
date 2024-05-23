@@ -162,7 +162,3 @@ node_modules
 coverage
 /violations.csv
 /violations.json
-/dist/
-/dist/*
-# But keep the index.js file
-!/dist/index.js
