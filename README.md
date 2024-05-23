@@ -25,7 +25,7 @@ This action scans the specified `include_directories` for test files and checks 
 - **Required**: No
 - **Default**: `src/test`
 
-### `excludes`
+### `exclude_files`
 - **Description**: List of filenames to exclude from suffix checks, separated by commas.
 - **Required**: No
 - **Default**: None
@@ -109,7 +109,7 @@ jobs:
           with:
             suffixes: 'UnitTests,IntegrationTests'
             include_directories: 'src/test'
-            excludes: 'TestHelper.scala,TestUtils'
+            exclude_files: 'TestHelper.scala,TestUtils'
             case_sensitivity: 'true'
             logic: 'false'
             report_format: 'console'

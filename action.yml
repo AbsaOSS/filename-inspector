@@ -9,7 +9,11 @@ inputs:
     description: 'List of directories to include in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
     required: false
     default: 'src/test'
-  excludes:
+  exclude_directories:
+    description: 'List of project root directory names to exclude in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
+    required: false
+    default: 'dist,node_modules,coverage,target,.idea,.github'
+  exclude_files:
     description: 'List of filenames to exclude from suffix checks, separated by commas (e.g., HelperUtils,Constants).'
     required: false
     default: ''

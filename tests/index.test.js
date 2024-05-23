@@ -51,10 +51,10 @@ describe('run function', () => {
             expectedViolations: 1
         },
         {
-            description: 'custom excludes',
+            description: 'custom exclude files',
             inputs: {
                 'suffixes': 'UnitTests,IntegrationTests',
-                'excludes': 'test2.java',
+                'exclude_files': 'test2.java',
                 'verbose_logging': 'true',
             },
             expectedOutput: 'success',
@@ -64,7 +64,7 @@ describe('run function', () => {
             description: 'case insensitivity',
             inputs: {
                 'suffixes': 'UnitTests,IntegrationTests',
-                'excludes': 'test2.java'
+                'exclude_files': 'test2.java'
             },
             expectedOutput: 'success',
             expectedViolations: 2
@@ -106,7 +106,8 @@ describe('run function', () => {
         // const core = require('@actions/core');
         expect(core.getInput).toHaveBeenCalledWith('suffixes');
         expect(core.getInput).toHaveBeenCalledWith('include_directories');
-        expect(core.getInput).toHaveBeenCalledWith('excludes');
+        expect(core.getInput).toHaveBeenCalledWith('exclude_directories');
+        expect(core.getInput).toHaveBeenCalledWith('exclude_files');
         expect(core.getInput).toHaveBeenCalledWith('case_sensitivity');
         expect(core.getInput).toHaveBeenCalledWith('logic');
         expect(core.getInput).toHaveBeenCalledWith('report_format');
