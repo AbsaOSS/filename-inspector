@@ -10,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -163,3 +162,7 @@ node_modules
 coverage
 /violations.csv
 /violations.json
+/dist/
+/dist/*
+# But keep the index.js file
+!/dist/index.js

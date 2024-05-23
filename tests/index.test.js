@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const fs = require('fs');
 const path = require('path');
-const run = require('../index.js');
+const run = require('../src');
 const {mockCore, mockFs, mockPath, mockInputs} = require("./mocks");
 
 describe('run function', () => {

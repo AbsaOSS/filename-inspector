@@ -77,7 +77,7 @@ async function run() {
             }
         }
 
-        scanDirectory(path.join(process.cwd(), "__tests__"));
+        scanDirectory(path.join(process.cwd(), "tests"));
 
         if (verboseLogging) {
             core.info(`Total violations: ${violationsCount}`);
