@@ -7,7 +7,7 @@ async function run() {
     try {
         const suffixesRaw = core.getInput('suffixes');
         const suffixes = suffixesRaw ? suffixesRaw.split(',').map(s => s.trim()) : [];
-        const includeDirectoriesRaw = core.getInput('include_directories') || "src/test";
+        const includeDirectoriesRaw = core.getInput('include_directories') || "src/test/";
         const includeDirectories = includeDirectoriesRaw ? includeDirectoriesRaw.split(',').map(s => s.trim()) : [];
         const excludeDirectoriesRaw = core.getInput('exclude_directories') || "dist,node_modules,coverage,target,.idea,.github";
         const excludeDirectories = excludeDirectoriesRaw ? excludeDirectoriesRaw.split(',').map(s => s.trim()) : [];
@@ -119,4 +119,8 @@ async function run() {
     }
 }
 
-run();
+module.exports.run = run;
+
+if (require.main === module) {
+    run();
+}

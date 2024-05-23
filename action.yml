@@ -8,7 +8,7 @@ inputs:
   include_directories:
     description: 'List of directories to include in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
     required: false
-    default: 'src/test'
+    default: 'src/test/'
   exclude_directories:
     description: 'List of project root directory names to exclude in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
     required: false

@@ -16,7 +16,7 @@
     "ts-jest": "^29.1.2"
   },
   "scripts": {
-    "build": "ncc build src/index.js -o dist",
+    "build": "ncc build src/file_suffix_inspector.js -o dist",
     "test": "jest --coverage"
   },
   "jest": {

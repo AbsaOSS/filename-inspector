@@ -23,7 +23,7 @@ This action scans the specified `include_directories` for test files and checks 
 ### `include_directories`
 - **Description**: List of directories to include in the pattern check. This input limits scanning to these directories only.
 - **Required**: No
-- **Default**: `src/test`
+- **Default**: `src/test/`
 
 ### `exclude_files`
 - **Description**: List of filenames to exclude from suffix checks, separated by commas.
@@ -108,7 +108,7 @@ jobs:
           uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
           with:
             suffixes: 'UnitTests,IntegrationTests'
-            include_directories: 'src/test'
+            include_directories: 'src/test/'
             exclude_files: 'TestHelper.scala,TestUtils'
             case_sensitivity: 'true'
             logic: 'false'
