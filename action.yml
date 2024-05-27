@@ -57,8 +57,5 @@ runs:
         INPUT_VERBOSE_LOGGING: ${{ inputs.verbose_logging }}
         INPUT_FAIL_ON_VIOLATIONS: ${{ inputs.fail_on_violations }}
       run: |
-        ls -l
-        ls -l ${{ github.action_path }}        
-        ls -l ${{ github.action_path }}/src        
-        python3 ./src/file_suffix_inspector.py
+        python3 ${{ github.action_path }}/src/file_suffix_inspector.py
       shell: bash
