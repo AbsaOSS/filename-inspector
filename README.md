@@ -59,11 +59,6 @@ This action scans the specified `include_directories` for test files and checks 
 ### `conventions_violations`
 - **Description**: Count test files not complying with the specified suffix conventions.
 
-## Prerequisites
-
-- **Node.js**: Ensure you have Node.js installed. You can download it from [nodejs.org](https://nodejs.org/).
-- **npm**: npm is installed with Node.js. Ensure you have npm installed by running `npm -v` in your terminal.
-
 ## Installation
 
 Clone the repository and navigate to the project directory:
@@ -75,7 +70,7 @@ cd test-file-suffix-inspector
 
 Install the dependencies:
 ```bash
-npm install
+pip install -r requirements.txt
 ```
 
 ## Usage Example
@@ -118,27 +113,23 @@ jobs:
 ```
 
 ## Running Unit Tests
-Unit tests are written using Jest. To run the tests, use the following command:
+Unit tests are written using **TODO**. To run the tests, use the following command:
 
 ```sbt
-npm test
+pytest
 ```
 
 This will execute all tests located in the __tests__ directory and generate a code coverage report.
 
 ## Code Coverage
-Code coverage is collected using Jest's built-in coverage tool. To run the tests and collect coverage information, use the following command:
+Code coverage is collected using **TODO** coverage tool. To run the tests and collect coverage information, use the following command:
 
 ```bash
-npm test -- --coverage
+pytest --cov=src --cov-report html tests/
 ```
-
-After running the tests with coverage, you can find the coverage reports in the coverage directory. The reports include a summary printed in the terminal and detailed HTML reports.
-
-To view the detailed HTML coverage report, open the following file in your browser:
-
-```
-coverage/lcov-report/index.html
+See the coverage report on the path:
+```bash
+htmlcov/index.html
 ```
 
 ## Contributing

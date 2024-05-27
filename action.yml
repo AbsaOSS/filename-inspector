@@ -4,7 +4,7 @@ inputs:
   suffixes:
     description: 'List of suffixes that test files should have, separated by commas (e.g., UnitTest,IntegrationTest).'
     required: true
-    default: 'UnitTest,IntegrationTest'
+    default: 'UnitTests,IntegrationTests'
   include_directories:
     description: 'List of directories to include in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
     required: false
@@ -12,7 +12,7 @@ inputs:
   exclude_directories:
     description: 'List of project root directory names to exclude in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
     required: false
-    default: 'dist,node_modules,coverage,target,.idea,.github'
+    default: 'dist,node_modules,coverage,target,.idea,.github,.git'
   exclude_files:
     description: 'List of filenames to exclude from suffix checks, separated by commas (e.g., HelperUtils,Constants).'
     required: false
@@ -40,6 +40,21 @@ inputs:
 outputs:
   conventions_violations:
     description: 'Count of test files that do not comply with the specified suffix conventions.'
+    value: ${{ steps.scan-test-files.outputs.conventions_violations }}
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: 'composite'
+  steps:
+    - name: Scan test files for suffix conventions
+      id: scan-test-files
+      env:
+        INPUT_SUFFIXES: ${{ inputs.suffixes }}
+        INPUT_INCLUDE_DIRECTORIES: ${{ inputs.include_directories }}
+        INPUT_EXCLUDE_DIRECTORIES: ${{ inputs.exclude_directories }}
+        INPUT_EXCLUDE_FILES: ${{ inputs.exclude_files }}
+        INPUT_CASE_SENSITIVITY: ${{ inputs.case_sensitivity }}
+        INPUT_LOGIC: ${{ inputs.logic }}
+        INPUT_REPORT_FORMAT: ${{ inputs.report_format }}
+        INPUT_VERBOSE_LOGGING: ${{ inputs.verbose_logging }}
+        INPUT_FAIL_ON_VIOLATIONS: ${{ inputs.fail_on_violations }}
+      run: python3 ./src/file_suffix_inspector.py
+      shell: bash
