@@ -58,7 +58,7 @@ runs:
         INPUT_FAIL_ON_VIOLATIONS: ${{ inputs.fail_on_violations }}
       run: |
         ls -l
-        ls -l .        
-        ls -l ./src        
+        ls -l ${{ github.action_path }}        
+        ls -l ${{ github.action_path }}/src        
         python3 ./src/file_suffix_inspector.py
       shell: bash
