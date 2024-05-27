@@ -1,21 +1,34 @@
 import contextlib
 import io
 import subprocess
-
 import pytest
 import os
 
 from unittest.mock import patch
 from src.file_suffix_inspector import get_input, set_output, set_failed, run
 
-# Variables & parameters
+# Constants
+DEFAULT_SUFFIXES = 'UnitTests,IntegrationTests'
+INCLUDE_DIRECTORIES = 'src/test/'
+EXCLUDE_DIRECTORIES = 'dist,node_modules,coverage,target,.idea,.github,.git,htmlcov'
+EXCLUDE_FILES_EMPTY = ''
+EXCLUDE_FILES = 'test1.java'
+CASE_SENSITIVITY = 'true'
+LOGIC = 'true'
+REPORT_FORMAT_CONSOLE = 'console'
+REPORT_FORMAT_CSV = 'csv'
+REPORT_FORMAT_JSON = 'json'
+VERBOSE_LOGGING_FALSE = 'false'
+VERBOSE_LOGGING_TRUE = 'true'
+FAIL_ON_VIOLATIONS_FALSE = 'false'
+FAIL_ON_VIOLATIONS_TRUE = 'true'
 
+# Variables & parameters
 output_values = {}
 failed_message: str = ""
 
 
 # Fixtures
-
 @pytest.fixture(autouse=True)
 def clear_output_values():
     output_values.clear()
@@ -28,132 +41,20 @@ def reset_failed_message():
 
 
 @pytest.fixture
-def mock_getenv_default(monkeypatch):
-    def getenv_mock(key):
-        if key == 'INPUT_SUFFIXES':
-            return 'UnitTests,IntegrationTests'
-        elif key == 'INPUT_INCLUDE_DIRECTORIES':
-            return 'src/test/'
-        elif key == 'INPUT_EXCLUDE_DIRECTORIES':
-            return 'dist,node_modules,coverage,target,.idea,.github,.git,htmlcov'
-        elif key == 'INPUT_EXCLUDE_FILES':
-            return ''
-        elif key == 'INPUT_CASE_SENSITIVITY':
-            return 'true'
-        elif key == 'INPUT_LOGIC':
-            return 'true'
-        elif key == 'INPUT_REPORT_FORMAT':
-            return 'console'
-        elif key == 'INPUT_VERBOSE_LOGGING':
-            return 'false'
-        elif key == 'INPUT_FAIL_ON_VIOLATIONS':
-            return 'false'
-        else:
-            return 'test_value'
-    monkeypatch.setattr(os, 'getenv', getenv_mock)
-
-
-@pytest.fixture
-def mock_getenv_csv(monkeypatch):
-    def getenv_mock(key):
-        if key == 'INPUT_SUFFIXES':
-            return 'UnitTests,IntegrationTests'
-        elif key == 'INPUT_INCLUDE_DIRECTORIES':
-            return 'src/test/'
-        elif key == 'INPUT_EXCLUDE_DIRECTORIES':
-            return 'dist,node_modules,coverage,target,.idea,.github,.git,htmlcov'
-        elif key == 'INPUT_EXCLUDE_FILES':
-            return ''
-        elif key == 'INPUT_CASE_SENSITIVITY':
-            return 'true'
-        elif key == 'INPUT_LOGIC':
-            return 'true'
-        elif key == 'INPUT_REPORT_FORMAT':
-            return 'csv'
-        elif key == 'INPUT_VERBOSE_LOGGING':
-            return 'false'
-        elif key == 'INPUT_FAIL_ON_VIOLATIONS':
-            return 'false'
-        else:
-            return 'test_value'
-    monkeypatch.setattr(os, 'getenv', getenv_mock)
-
-
-@pytest.fixture
-def mock_getenv_fail(monkeypatch):
-    def getenv_mock(key):
-        if key == 'INPUT_SUFFIXES':
-            return 'UnitTests,IntegrationTests'
-        elif key == 'INPUT_INCLUDE_DIRECTORIES':
-            return 'src/test/'
-        elif key == 'INPUT_EXCLUDE_DIRECTORIES':
-            return 'dist,node_modules,coverage,target,.idea,.github,.git,htmlcov'
-        elif key == 'INPUT_EXCLUDE_FILES':
-            return ''
-        elif key == 'INPUT_CASE_SENSITIVITY':
-            return 'true'
-        elif key == 'INPUT_LOGIC':
-            return 'true'
-        elif key == 'INPUT_REPORT_FORMAT':
-            return 'console'
-        elif key == 'INPUT_VERBOSE_LOGGING':
-            return 'false'
-        elif key == 'INPUT_FAIL_ON_VIOLATIONS':
-            return 'true'
-        else:
-            return 'test_value'
-    monkeypatch.setattr(os, 'getenv', getenv_mock)
-
-
-@pytest.fixture
-def mock_getenv_json(monkeypatch):
-    def getenv_mock(key):
-        if key == 'INPUT_SUFFIXES':
-            return 'UnitTests,IntegrationTests'
-        elif key == 'INPUT_INCLUDE_DIRECTORIES':
-            return 'src/test/'
-        elif key == 'INPUT_EXCLUDE_DIRECTORIES':
-            return 'dist,node_modules,coverage,target,.idea,.github,.git,htmlcov'
-        elif key == 'INPUT_EXCLUDE_FILES':
-            return ''
-        elif key == 'INPUT_CASE_SENSITIVITY':
-            return 'true'
-        elif key == 'INPUT_LOGIC':
-            return 'true'
-        elif key == 'INPUT_REPORT_FORMAT':
-            return 'json'
-        elif key == 'INPUT_VERBOSE_LOGGING':
-            return 'false'
-        elif key == 'INPUT_FAIL_ON_VIOLATIONS':
-            return 'false'
-        else:
-            return 'test_value'
-    monkeypatch.setattr(os, 'getenv', getenv_mock)
-
-
-@pytest.fixture
-def mock_getenv_verbose_file_exclude(monkeypatch):
-    def getenv_mock(key):
-        if key == 'INPUT_SUFFIXES':
-            return 'UnitTests,IntegrationTests'
-        elif key == 'INPUT_INCLUDE_DIRECTORIES':
-            return 'src/test/'
-        elif key == 'INPUT_EXCLUDE_DIRECTORIES':
-            return 'dist,node_modules,coverage,target,.idea,.github,.git,htmlcov'
-        elif key == 'INPUT_EXCLUDE_FILES':
-            return 'test1.java'
-        elif key == 'INPUT_CASE_SENSITIVITY':
-            return 'true'
-        elif key == 'INPUT_LOGIC':
-            return 'true'
-        elif key == 'INPUT_REPORT_FORMAT':
-            return 'console'
-        elif key == 'INPUT_VERBOSE_LOGGING':
-            return 'true'
-        elif key == 'INPUT_FAIL_ON_VIOLATIONS':
-            return 'false'
-        else:
-            return 'test_value'
+def mock_getenv(monkeypatch):
+    def getenv_mock(key, default=''):
+        env = {
+            'INPUT_SUFFIXES': DEFAULT_SUFFIXES,
+            'INPUT_INCLUDE_DIRECTORIES': INCLUDE_DIRECTORIES,
+            'INPUT_EXCLUDE_DIRECTORIES': EXCLUDE_DIRECTORIES,
+            'INPUT_EXCLUDE_FILES': EXCLUDE_FILES_EMPTY,
+            'INPUT_CASE_SENSITIVITY': CASE_SENSITIVITY,
+            'INPUT_LOGIC': LOGIC,
+            'INPUT_REPORT_FORMAT': default,
+            'INPUT_VERBOSE_LOGGING': VERBOSE_LOGGING_FALSE,
+            'INPUT_FAIL_ON_VIOLATIONS': FAIL_ON_VIOLATIONS_FALSE
+        }
+        return env.get(key, 'test_value')
     monkeypatch.setattr(os, 'getenv', getenv_mock)
 
 
@@ -167,8 +68,7 @@ def mock_set_failed(message):
 
 
 # Tests
-
-def test_get_input(mock_getenv_default):
+def test_get_input(mock_getenv):
     with patch('os.getenv', return_value='test_value') as mock_getenv_func:
         assert get_input('test') == 'test_value'
         mock_getenv_func.assert_called_with('INPUT_TEST')
@@ -232,38 +132,37 @@ def test_set_output_exception(monkeypatch):
     assert str(e.value) == f'Failed to set output: {name}={value}'
 
 
-def test_run_default(mock_getenv_default):
-    with patch('src.file_suffix_inspector.set_output', new=mock_set_output):
-        run()
-        assert output_values['conventions_violations'] == '3'
+@pytest.mark.parametrize("report_format, verbose_logging, excluded_files, fail_on_violations, expected_violations, expected_report, expected_failed_message", [
+    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATIONS_FALSE, 3, None, None),
+    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_TRUE, EXCLUDE_FILES, FAIL_ON_VIOLATIONS_FALSE, 2, None, None),
+    (REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATIONS_FALSE, 3, 'violations.csv', None),
+    (REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATIONS_FALSE, 3, 'violations.json', None),
+    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATIONS_TRUE, 3, None, 'There are 3 test file naming convention violations.')
+])
+def test_run(monkeypatch, report_format, verbose_logging, excluded_files, fail_on_violations, expected_violations, expected_report, expected_failed_message):
+    def getenv_mock(key, default=''):
+        env = {
+            'INPUT_SUFFIXES': DEFAULT_SUFFIXES,
+            'INPUT_INCLUDE_DIRECTORIES': INCLUDE_DIRECTORIES,
+            'INPUT_EXCLUDE_DIRECTORIES': EXCLUDE_DIRECTORIES,
+            'INPUT_EXCLUDE_FILES': excluded_files,
+            'INPUT_CASE_SENSITIVITY': CASE_SENSITIVITY,
+            'INPUT_LOGIC': LOGIC,
+            'INPUT_REPORT_FORMAT': report_format,
+            'INPUT_VERBOSE_LOGGING': verbose_logging,
+            'INPUT_FAIL_ON_VIOLATIONS': fail_on_violations
+        }
+        return env.get(key, 'test_value')
 
-
-def test_run_verbose(mock_getenv_verbose_file_exclude):
-    with patch('src.file_suffix_inspector.set_output', new=mock_set_output):
-        run()
-        assert output_values['conventions_violations'] == '2'
-
-
-def test_run_csv(mock_getenv_csv):
-    with patch('src.file_suffix_inspector.set_output', new=mock_set_output):
-        run()
-        assert output_values['conventions_violations'] == '3'
-        assert output_values['report_file'] == 'violations.csv'
-
-
-def test_run_json(mock_getenv_json):
-    with patch('src.file_suffix_inspector.set_output', new=mock_set_output):
-        run()
-        assert output_values['conventions_violations'] == '3'
-        assert output_values['report_file'] == 'violations.json'
-
-
-def test_run_fail(mock_getenv_fail):
+    monkeypatch.setattr(os, 'getenv', getenv_mock)
     with (patch('src.file_suffix_inspector.set_output', new=mock_set_output),
           patch('src.file_suffix_inspector.set_failed', new=mock_set_failed)):
         run()
-        assert output_values['conventions_violations'] == '3'
-        assert failed_message == 'There are 3 test file naming convention violations.'
+        assert output_values['conventions_violations'] == str(expected_violations)
+        if expected_report:
+            assert output_values['report_file'] == expected_report
+        if expected_failed_message:
+            assert failed_message == expected_failed_message
 
 
 def test_run_exception_handling():
