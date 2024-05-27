@@ -1,6 +1,7 @@
 import os
 import json
 import csv
+import subprocess
 from pathlib import Path
 
 
@@ -10,7 +11,10 @@ def get_input(name: str) -> str:
 
 
 def set_output(name: str, value: str):
-    print(f'::set-output name={name}::{value}')
+    command = f'echo "{name}={value}" >> GITHUB_OUTPUT'
+    result = subprocess.run(command, shell=True, check=True)
+    if result.returncode != 0:
+        raise Exception(f'Failed to set output: {name}={value}')
 
 
 def set_failed(message: str):

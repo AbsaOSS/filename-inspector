@@ -1,11 +1,11 @@
 import contextlib
 import io
+import subprocess
 
 import pytest
-from unittest.mock import patch, mock_open
-from pathlib import Path
 import os
 
+from unittest.mock import patch
 from src.file_suffix_inspector import get_input, set_output, set_failed, run
 
 # Variables & parameters
@@ -174,13 +174,30 @@ def test_get_input(mock_getenv_default):
         mock_getenv_func.assert_called_with('INPUT_TEST')
 
 
-def test_set_output():
-    test_name = 'test_name'
-    test_value = 'test_value'
-    with io.StringIO() as buf, contextlib.redirect_stdout(buf):
-        set_output(test_name, test_value)
-        stdout = buf.getvalue().strip()
-    assert stdout == '::set-output name=test_name::test_value'
+def test_set_output(monkeypatch):
+    name = 'test_name'
+    value = 'test_value'
+    expected_output = f'{name}={value}\n'
+
+    # Mock the subprocess.run method to prevent actual command execution
+    def mock_run(*args, **kwargs):
+        with open('GITHUB_OUTPUT', 'w') as f:
+            f.write(expected_output)
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(subprocess, 'run', mock_run)
+
+    # Call the set_output method
+    set_output(name, value)
+
+    # Check the content of the GITHUB_OUTPUT file
+    with open('GITHUB_OUTPUT', 'r') as f:
+        output = f.read()
+
+    assert output == expected_output
+
+    # Clean up the GITHUB_OUTPUT file
+    os.remove('GITHUB_OUTPUT')
 
 
 def test_set_failed():
@@ -196,6 +213,23 @@ def test_set_failed():
             pass
         stdout = buf.getvalue().strip()
     assert stdout == '::error::falling!'
+
+
+def test_set_output_exception(monkeypatch):
+    name = 'test_name'
+    value = 'test_value'
+
+    # Mock the subprocess.run method to return a non-zero return code
+    def mock_run(*args, **kwargs):
+        return subprocess.CompletedProcess(args, 1)  # returncode is 1
+
+    monkeypatch.setattr(subprocess, 'run', mock_run)
+
+    # Call the set_output method and check if it raises an exception
+    with pytest.raises(Exception) as e:
+        set_output(name, value)
+
+    assert str(e.value) == f'Failed to set output: {name}={value}'
 
 
 def test_run_default(mock_getenv_default):
