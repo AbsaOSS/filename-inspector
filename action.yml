@@ -57,6 +57,6 @@ runs:
         INPUT_VERBOSE_LOGGING: ${{ inputs.verbose_logging }}
         INPUT_FAIL_ON_VIOLATIONS: ${{ inputs.fail_on_violations }}
       run: |
-        ll
+        ls -l
         python3 ./src/file_suffix_inspector.py
       shell: bash
