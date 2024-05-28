@@ -4,9 +4,15 @@
 - [How It Works](#how-it-works)
 - [Inputs](#inputs)
 - [Outputs](#outputs)
+- [Installation](#installation)
 - [Usage Example](#usage-example)
   - [Default](#default)
   - [Full example](#full-example)
+- [Running Unit Tests](#running-unit-tests)
+- [Code Coverage](#code-coverage)
+- [Run Action Locally](#run-action-locally)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Description
 The **Test File Suffix Inspector** GitHub Action is designed to ensure naming conventions in test files within specified repository directories. It scans for test files and reports any missing specified suffixes, helping maintain consistency and adherence to project standards.
@@ -113,16 +119,16 @@ jobs:
 ```
 
 ## Running Unit Tests
-Unit tests are written using **TODO**. To run the tests, use the following command:
+Unit tests are written using pytest. To run the tests, use the following command:
 
-```sbt
+```bash
 pytest
 ```
 
 This will execute all tests located in the __tests__ directory and generate a code coverage report.
 
 ## Code Coverage
-Code coverage is collected using **TODO** coverage tool. To run the tests and collect coverage information, use the following command:
+Code coverage is collected using pytest-cov coverage tool. To run the tests and collect coverage information, use the following command:
 
 ```bash
 pytest --cov=src --cov-report html tests/
@@ -132,9 +138,29 @@ See the coverage report on the path:
 htmlcov/index.html
 ```
 
+## Run Action Locally
+Create *.sh file and place it in the project root.
+```bash
+#!/bin/bash
+
+# Set environment variables based on the action inputs
+export INPUT_SUFFIXES="UnitTests,IntegrationTests"
+export INPUT_INCLUDE_DIRECTORIES="src/test/"
+export INPUT_EXCLUDE_DIRECTORIES="dist,node_modules,coverage,target,.idea,.github,.git,htmlcov"
+export INPUT_EXCLUDE_FILES=""
+export INPUT_CASE_SENSITIVITY="true"
+export INPUT_LOGIC="true"
+export INPUT_REPORT_FORMAT="console"
+export INPUT_VERBOSE_LOGGING="true"
+export INPUT_FAIL_ON_VIOLATIONS="false"
+
+# Run the Python script
+python3 ./src/file_suffix_inspector.py
+```
+
+
 ## Contributing
 Feel free to submit issues or pull requests. For major changes, please open an issue first to discuss what you would like to change.
-
 
 ## License
 
