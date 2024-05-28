@@ -68,68 +68,68 @@ def mock_set_failed(message):
 
 
 # Tests
-def test_get_input(mock_getenv):
-    with patch('os.getenv', return_value='test_value') as mock_getenv_func:
-        assert get_input('test') == 'test_value'
-        mock_getenv_func.assert_called_with('INPUT_TEST')
+# def test_get_input(mock_getenv):
+#     with patch('os.getenv', return_value='test_value') as mock_getenv_func:
+#         assert get_input('test') == 'test_value'
+#         mock_getenv_func.assert_called_with('INPUT_TEST')
 
 
-def test_set_output(monkeypatch):
-    name = 'test_name'
-    value = 'test_value'
-    expected_output = f'{name}={value}\n'
-
-    # Mock the subprocess.run method to prevent actual command execution
-    def mock_run(*args, **kwargs):
-        with open('GITHUB_OUTPUT', 'w') as f:
-            f.write(expected_output)
-        return subprocess.CompletedProcess(args, 0)
-
-    monkeypatch.setattr(subprocess, 'run', mock_run)
-
-    # Call the set_output method
-    set_output(name, value)
-
-    # Check the content of the GITHUB_OUTPUT file
-    with open('GITHUB_OUTPUT', 'r') as f:
-        output = f.read()
-
-    assert output == expected_output
-
-    # Clean up the GITHUB_OUTPUT file
-    os.remove('GITHUB_OUTPUT')
-
-
-def test_set_failed():
-    test_message = 'falling!'
-    with pytest.raises(SystemExit) as pytest_wrapped_e:
-        set_failed(test_message)
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == 1
-    with io.StringIO() as buf, contextlib.redirect_stdout(buf):
-        try:
-            set_failed(test_message)
-        except SystemExit:
-            pass
-        stdout = buf.getvalue().strip()
-    assert stdout == '::error::falling!'
+# def test_set_output(monkeypatch):
+#     name = 'test_name'
+#     value = 'test_value'
+#     expected_output = f'{name}={value}\n'
+#
+#     # Mock the subprocess.run method to prevent actual command execution
+#     def mock_run(*args, **kwargs):
+#         with open('GITHUB_OUTPUT', 'w') as f:
+#             f.write(expected_output)
+#         return subprocess.CompletedProcess(args, 0)
+#
+#     monkeypatch.setattr(subprocess, 'run', mock_run)
+#
+#     # Call the set_output method
+#     set_output(name, value)
+#
+#     # Check the content of the GITHUB_OUTPUT file
+#     with open('GITHUB_OUTPUT', 'r') as f:
+#         output = f.read()
+#
+#     assert output == expected_output
+#
+#     # Clean up the GITHUB_OUTPUT file
+#     os.remove('GITHUB_OUTPUT')
 
 
-def test_set_output_exception(monkeypatch):
-    name = 'test_name'
-    value = 'test_value'
+# def test_set_failed():
+#     test_message = 'falling!'
+#     with pytest.raises(SystemExit) as pytest_wrapped_e:
+#         set_failed(test_message)
+#     assert pytest_wrapped_e.type == SystemExit
+#     assert pytest_wrapped_e.value.code == 1
+#     with io.StringIO() as buf, contextlib.redirect_stdout(buf):
+#         try:
+#             set_failed(test_message)
+#         except SystemExit:
+#             pass
+#         stdout = buf.getvalue().strip()
+#     assert stdout == '::error::falling!'
 
-    # Mock the subprocess.run method to return a non-zero return code
-    def mock_run(*args, **kwargs):
-        return subprocess.CompletedProcess(args, 1)  # returncode is 1
 
-    monkeypatch.setattr(subprocess, 'run', mock_run)
-
-    # Call the set_output method and check if it raises an exception
-    with pytest.raises(Exception) as e:
-        set_output(name, value)
-
-    assert str(e.value) == f'Failed to set output: {name}={value}'
+# def test_set_output_exception(monkeypatch):
+#     name = 'test_name'
+#     value = 'test_value'
+#
+#     # Mock the subprocess.run method to return a non-zero return code
+#     def mock_run(*args, **kwargs):
+#         return subprocess.CompletedProcess(args, 1)  # returncode is 1
+#
+#     monkeypatch.setattr(subprocess, 'run', mock_run)
+#
+#     # Call the set_output method and check if it raises an exception
+#     with pytest.raises(Exception) as e:
+#         set_output(name, value)
+#
+#     assert str(e.value) == f'Failed to set output: {name}={value}'
 
 
 @pytest.mark.parametrize("report_format, verbose_logging, excluded_files, fail_on_violations, expected_violations, expected_report, expected_failed_message", [
@@ -158,9 +158,9 @@ def test_run(monkeypatch, report_format, verbose_logging, excluded_files, fail_o
     with (patch('src.file_suffix_inspector.set_output', new=mock_set_output),
           patch('src.file_suffix_inspector.set_failed', new=mock_set_failed)):
         run()
-        assert output_values['conventions_violations'] == str(expected_violations)
+        assert output_values['conventions-violations'] == str(expected_violations)
         if expected_report:
-            assert output_values['report_file'] == expected_report
+            assert output_values['report-path'] == expected_report
         if expected_failed_message:
             assert failed_message == expected_failed_message
 

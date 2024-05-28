@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def get_input(name: str) -> str:
-    value = os.getenv(f'INPUT_{name.upper()}')
+    value = os.getenv(f'INPUT_{name.upper().replace("-", "_")}')
     return value
 
 
@@ -98,7 +98,7 @@ def run():
 
         scan_directory(Path.cwd())
 
-        set_output('conventions_violations', str(violations_count))
+        set_output('conventions-violations', str(violations_count))
 
         if report_format == 'console' or verbose_logging:
             print(f'Total violations: {violations_count}')
