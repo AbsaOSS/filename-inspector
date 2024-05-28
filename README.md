@@ -26,17 +26,17 @@ This action scans the specified `include_directories` for test files and checks 
 - **Required**: Yes
 - **Default**: `UnitTests,IntegrationTests`
 
-### `include-directories`
+### `include_directories`
 - **Description**: List of directories to include in the pattern check. This input limits scanning to these directories only.
 - **Required**: No
 - **Default**: `src/test/`
 
-### `exclude-files`
+### `exclude_files`
 - **Description**: List of filenames to exclude from suffix checks, separated by commas.
 - **Required**: No
 - **Default**: None
 
-### `case-sensitivity`
+### `case_sensitivity`
 - **Description**: Determines if the filename check should be case-sensitive.
 - **Required**: No
 - **Default**: `true`
@@ -46,26 +46,26 @@ This action scans the specified `include_directories` for test files and checks 
 - **Required**: No
 - **Default**: `false`
 
-### `report-format`
+### `report_format`
 - **Description**: Specifies the format of the output report. Options include console, csv, and json.
 - **Required**: No
 - **Default**: `console`
 
-### `verbose-logging`
+### `verbose_logging`
 - **Description**: Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.
 - **Required**: No
 - **Default**: `false`
 
-### `fail-on-violations`
+### `fail_on_violations`
 - **Description**: Set to true to fail the action if any convention violations are detected. Set to false to continue without failure.
 - **Required**: No
 - **Default**: `false`
 
 ## Outputs
-### `conventions-violations`
+### `conventions_violations`
 - **Description**: Count test files not complying with the specified suffix conventions.
 
-### `report-path`
+### `report_path`
 - **Description**: Path to the generated report file.
 
 ## Installation
@@ -114,13 +114,13 @@ jobs:
           uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
           with:
             suffixes: 'UnitTests,IntegrationTests'
-            include-directories: 'src/test/'
-            exclude-files: 'TestHelper.scala,TestUtils'
-            case-sensitivity: 'true'
+            include_directories: 'src/test/'
+            exclude_files: 'TestHelper.scala,TestUtils'
+            case_sensitivity: 'true'
             logic: 'false'
-            report-format: 'console'
-            verbose-logging: 'false'
-            fail-on-violations: 'false'
+            report_format: 'console'
+            verbose_logging: 'false'
+            fail_on_violations: 'false'
 ```
 
 ## Running Unit Tests
