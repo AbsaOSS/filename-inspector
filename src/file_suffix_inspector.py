@@ -96,16 +96,13 @@ def run():
 
         scan_directory(Path.cwd())
 
-        if verbose_logging:
-            info(f'Total violations: {violations_count}')
-            info(f'Violating files: {violations}')
-
         set_output('conventions_violations', str(violations_count))
 
         if report_format == 'console' or verbose_logging:
             print(f'Total violations: {violations_count}')
             print(f'Violating files: {violations}')
-        elif report_format == 'csv':
+
+        if report_format == 'csv':
             with open('violations.csv', mode='w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows([[violation] for violation in violations])
