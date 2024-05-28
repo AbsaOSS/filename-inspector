@@ -11,7 +11,7 @@ def get_input(name: str) -> str:
 
 
 def set_output(name: str, value: str):
-    command = f'echo "{name}={value}" >> GITHUB_OUTPUT'
+    command = f'echo "{name}={value}" >> GITHUB_ENV'
     result = subprocess.run(command, shell=True, check=True)
     if result.returncode != 0:
         raise Exception(f'Failed to set output: {name}={value}')
