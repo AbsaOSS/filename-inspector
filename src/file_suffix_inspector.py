@@ -11,10 +11,12 @@ def get_input(name: str) -> str:
 
 
 def set_output(name: str, value: str):
-    command = f'echo "{name}={value}" >> GITHUB_ENV'
-    result = subprocess.run(command, shell=True, check=True)
-    if result.returncode != 0:
-        raise Exception(f'Failed to set output: {name}={value}')
+    output_file = os.getenv('GITHUB_OUTPUT', None)
+    if output_file:
+        with open(output_file, 'a') as f:
+            f.write(f'{name}={value}\n')
+    else:
+        raise EnvironmentError('GITHUB_OUTPUT environment variable is not set.')
 
 
 def set_failed(message: str):
