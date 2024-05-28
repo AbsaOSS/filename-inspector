@@ -17,4 +17,4 @@ jobs:
           pip install -r requirements.txt
       - name: Execute unit tests
         run: |
-          pytest ./tests
+          pytest --cov=src --cov-report html tests/
