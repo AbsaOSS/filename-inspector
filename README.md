@@ -26,17 +26,17 @@ This action scans the specified `include_directories` for test files and checks 
 - **Required**: Yes
 - **Default**: `UnitTests,IntegrationTests`
 
-### `include_directories`
+### `include-directories`
 - **Description**: List of directories to include in the pattern check. This input limits scanning to these directories only.
 - **Required**: No
 - **Default**: `src/test/`
 
-### `exclude_files`
+### `exclude-files`
 - **Description**: List of filenames to exclude from suffix checks, separated by commas.
 - **Required**: No
 - **Default**: None
 
-### `case_sensitivity`
+### `case-sensitivity`
 - **Description**: Determines if the filename check should be case-sensitive.
 - **Required**: No
 - **Default**: `true`
@@ -46,24 +46,27 @@ This action scans the specified `include_directories` for test files and checks 
 - **Required**: No
 - **Default**: `false`
 
-### `report_format`
+### `report-format`
 - **Description**: Specifies the format of the output report. Options include console, csv, and json.
 - **Required**: No
 - **Default**: `console`
 
-### `verbose_logging`
+### `verbose-logging`
 - **Description**: Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.
 - **Required**: No
 - **Default**: `false`
 
-### `fail_on_violations`
+### `fail-on-violations`
 - **Description**: Set to true to fail the action if any convention violations are detected. Set to false to continue without failure.
 - **Required**: No
 - **Default**: `false`
 
 ## Outputs
-### `conventions_violations`
+### `conventions-violations`
 - **Description**: Count test files not complying with the specified suffix conventions.
+
+### `report-path`
+- **Description**: Path to the generated report file.
 
 ## Installation
 
@@ -90,6 +93,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Test File Suffix Inspector Default
+      id: scan-test-files
       uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
       with:
         suffixes: 'UnitTests,IntegrationTests'
@@ -106,16 +110,17 @@ jobs:
         - uses: actions/checkout@v2
 
         - name: Test File Suffix Inspector Full Custom
+          id: scan-test-files
           uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
           with:
             suffixes: 'UnitTests,IntegrationTests'
-            include_directories: 'src/test/'
-            exclude_files: 'TestHelper.scala,TestUtils'
-            case_sensitivity: 'true'
+            include-directories: 'src/test/'
+            exclude-files: 'TestHelper.scala,TestUtils'
+            case-sensitivity: 'true'
             logic: 'false'
-            report_format: 'console'
-            verbose_logging: 'false'
-            fail_on_violations: 'false'
+            report-format: 'console'
+            verbose-logging: 'false'
+            fail-on-violations: 'false'
 ```
 
 ## Running Unit Tests

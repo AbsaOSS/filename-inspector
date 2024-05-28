@@ -5,19 +5,19 @@ inputs:
     description: 'List of suffixes that test files should have, separated by commas (e.g., UnitTest,IntegrationTest).'
     required: true
     default: 'UnitTests,IntegrationTests'
-  include_directories:
+  include-directories:
     description: 'List of directories to include in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
     required: false
     default: 'src/test/'
-  exclude_directories:
+  exclude-directories:
     description: 'List of project root directory names to exclude in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
     required: false
     default: 'dist,node_modules,coverage,target,.idea,.github,.git'
-  exclude_files:
+  exclude-files:
     description: 'List of filenames to exclude from suffix checks, separated by commas (e.g., HelperUtils,Constants).'
     required: false
     default: ''
-  case_sensitivity:
+  case-sensitivity:
     description: 'Determines if the filename check should be case-sensitive.'
     required: false
     default: 'true'
@@ -25,22 +25,25 @@ inputs:
     description: 'Switch logic from suffix (end of filename) to contains (any part of filename). Set to false to enable contains logic.'
     required: false
     default: 'true'
-  report_format:
+  report-format:
     description: 'Specifies the format of the output report. Options: console, csv, and json.'
     required: false
     default: 'console'
-  verbose_logging:
+  verbose-logging:
     description: 'Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.'
     required: false
     default: 'false'
-  fail_on_violations:
+  fail-on-violations:
     description: 'Set to true to fail the action if any convention violations are detected. Set to false to continue without failure.'
     required: false
     default: 'false'
 outputs:
-  conventions_violations:
+  conventions-violations:
     description: 'Count of test files that do not comply with the specified suffix conventions.'
-    value: ${{ steps.scan-test-files.outputs.conventions_violations }}
+    value: ${{ steps.scan-test-files.outputs.conventions-violations }}
+  report-path:
+    description: 'Path to the generated report file.'
+    value: ${{ steps.scan-test-files.outputs.report-path }}
 runs:
   using: 'composite'
   steps:

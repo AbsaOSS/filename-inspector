@@ -32,17 +32,17 @@ def run():
     try:
         suffixes_raw = get_input('suffixes')
         suffixes = suffixes_raw.split(',') if suffixes_raw else []
-        include_directories_raw = get_input('include_directories')
+        include_directories_raw = get_input('include-directories')
         include_directories = include_directories_raw.split(',')
-        exclude_directories_raw = get_input('exclude_directories')
+        exclude_directories_raw = get_input('exclude-directories')
         exclude_directories = exclude_directories_raw.split(',')
-        exclude_files_raw = get_input('exclude_files')
+        exclude_files_raw = get_input('exclude-files')
         exclude_files = exclude_files_raw.split(',')
-        case_sensitivity = get_input('case_sensitivity') == 'true'
+        case_sensitivity = get_input('case-sensitivity') == 'true'
         logic = get_input('logic') == 'true'
-        report_format = get_input('report_format')
-        verbose_logging = get_input('verbose_logging') == 'true'
-        fail_on_violations = get_input('fail_on_violations') == 'true'
+        report_format = get_input('report-format')
+        verbose_logging = get_input('verbose-logging') == 'true'
+        fail_on_violations = get_input('fail-on-violations') == 'true'
 
         if verbose_logging:
             info(f'Suffixes: {suffixes}')
@@ -108,11 +108,11 @@ def run():
             with open('violations.csv', mode='w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows([[violation] for violation in violations])
-            set_output('report_file', 'violations.csv')
+            set_output('report-path', 'violations.csv')
         elif report_format == 'json':
             with open('violations.json', mode='w') as file:
                 json.dump({'violations': violations}, file)
-            set_output('report_file', 'violations.json')
+            set_output('report-path', 'violations.json')
 
         if fail_on_violations and violations_count > 0:
             set_failed(f'There are {violations_count} test file naming convention violations.')
