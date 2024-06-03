@@ -4,10 +4,10 @@
 - [How It Works](#how-it-works)
 - [Inputs](#inputs)
 - [Outputs](#outputs)
-- [Installation](#installation)
 - [Usage Example](#usage-example)
   - [Default](#default)
   - [Full example](#full-example)
+- [How To Build](#how-to-build)
 - [Running Unit Tests](#running-unit-tests)
 - [Code Coverage](#code-coverage)
 - [Run Action Locally](#run-action-locally)
@@ -15,7 +15,7 @@
 - [License](#license)
 
 ## Description
-The **Test File Suffix Inspector** GitHub Action is designed to ensure naming conventions in test files within specified repository directories. It scans for test files and reports any missing specified suffixes, helping maintain consistency and adherence to project standards.
+The **Test File Suffix Inspector** GitHub Action is designed to ensure naming conventions in test files within specified repository directories. It scans for test files and reports any missing specified suffixes, helping maintain consistency and adherence to project standards. The tool is not limited to any programming language files; it scans file names and ignores extensions until they are used in filters.
 
 ## How It Works
 This action scans the specified `include_directories` for test files and checks if they end with the defined `suffixes` or contain them anywhere in the filename based on the `pattern_logic.` It reports the count of files not meeting the naming conventions, with options to fail the action if violations are found.
@@ -30,6 +30,11 @@ This action scans the specified `include_directories` for test files and checks 
 - **Description**: List of directories to include in the pattern check. This input limits scanning to these directories only.
 - **Required**: No
 - **Default**: `src/test/`
+
+### `exclude_directories`
+- **Description**: List of directories to exclude from scanning, separated by commas.
+- **Required**: No
+- **Default**: `dist,node_modules,coverage,target,.idea,.github,.git`
 
 ### `exclude_files`
 - **Description**: List of filenames to exclude from suffix checks, separated by commas.
@@ -67,20 +72,6 @@ This action scans the specified `include_directories` for test files and checks 
 
 ### `report_path`
 - **Description**: Path to the generated report file.
-
-## Installation
-
-Clone the repository and navigate to the project directory:
-
-```bash
-git clone https://github.com/AbsaOSS/test-file-suffix-inspector.git
-cd test-file-suffix-inspector
-```
-
-Install the dependencies:
-```bash
-pip install -r requirements.txt
-```
 
 ## Usage Example
 ### Default
@@ -122,6 +113,21 @@ jobs:
             verbose_logging: 'false'
             fail_on_violations: 'false'
 ```
+
+## How to build
+
+Clone the repository and navigate to the project directory:
+
+```bash
+git clone https://github.com/AbsaOSS/test-file-suffix-inspector.git
+cd test-file-suffix-inspector
+```
+
+Install the dependencies:
+```bash
+pip install -r requirements.txt
+```
+
 
 ## Running Unit Tests
 Unit tests are written using pytest. To run the tests, use the following command:
