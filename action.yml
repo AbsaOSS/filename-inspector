@@ -2,25 +2,15 @@ name: 'Test File Suffix Inspector'
 description: 'Scans test files in src/test directories to ensure naming conventions, reporting any files missing specified suffixes.'
 inputs:
   suffixes:
-    description: 'List of suffixes that test files should have, separated by commas (e.g., UnitTest,IntegrationTest).'
+    description: 'List of suffixes that test files should have, separated by commas (e.g., "*UnitTest.*,*IntegrationTest.*").'
     required: true
-    default: 'UnitTests,IntegrationTests'
-  include_directories:
-    description: 'List of directories to include in the pattern check, separated by commas. Defining this input limits scanning to these directories only.'
-    required: false
-    default: 'src/test/'
+  paths:
+    description: 'List of glob patterns to include to control, separated by commas (e.g., "**/src/test/**/*.java,**/src/test/**/*.py").'
+    required: true
   excludes:
-    description: 'List of glob patterns to exclude from controls, separated by commas (e.g., HelperUtils,Constants).'
+    description: 'List of glob patterns to exclude from controls, separated by commas (e.g., "src/exclude_dir/*.py,tests/exclude_file.py").'
     required: false
     default: ''
-  case_sensitive:
-    description: 'Determines if the filename check should be case-sensitive.'
-    required: false
-    default: 'true'
-  contains:
-    description: 'Switch logic from suffix (end of filename) to contains (any part of filename). Set to true to enable contains logic.'
-    required: false
-    default: 'false'
   report_format:
     description: 'Specifies the format of the output report. Options: console, csv, and json.'
     required: false
@@ -47,10 +37,8 @@ runs:
       id: scan-test-files
       env:
         INPUT_SUFFIXES: ${{ inputs.suffixes }}
-        INPUT_INCLUDE_DIRECTORIES: ${{ inputs.include_directories }}
+        INPUT_PATHS: ${{ inputs.paths }}
         INPUT_EXCLUDES: ${{ inputs.excludes }}
-        INPUT_CASE_SENSITIVE: ${{ inputs.case_sensitive }}
-        INPUT_CONTAINS: ${{ inputs.contains }}
         INPUT_REPORT_FORMAT: ${{ inputs.report_format }}
         INPUT_VERBOSE_LOGGING: ${{ inputs.verbose_logging }}
         INPUT_FAIL_ON_VIOLATION: ${{ inputs.fail_on_violation }}

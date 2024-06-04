@@ -5,15 +5,13 @@ import pytest
 import os
 
 from unittest.mock import patch
-from src.file_suffix_inspector import get_input, set_output, set_failed, run
+from src.filename_inspector import get_input, set_output, set_failed, run
 
 # Constants
-DEFAULT_SUFFIXES = 'UnitTests,IntegrationTests'
-INCLUDE_DIRECTORIES = 'src/test/'
+DEFAULT_SUFFIXES = '*UnitTest.*,*IntegrationTest.*'
+PATHS = '**/src/test/**/*.java,**/src/test/**/*.py'
 EXCLUDES_EMPTY = ''
-EXCLUDES = 'test1.java'
-CASE_SENSITIVE = 'true'
-CONTAINS = 'false'
+EXCLUDES = '*src/exclude_dir/*,*ttests.java,*java/test1.java'
 REPORT_FORMAT_CONSOLE = 'console'
 REPORT_FORMAT_CSV = 'csv'
 REPORT_FORMAT_JSON = 'json'
@@ -44,10 +42,8 @@ def mock_getenv(monkeypatch):
     def getenv_mock(key, default=''):
         env = {
             'INPUT_SUFFIXES': DEFAULT_SUFFIXES,
-            'INPUT_INCLUDE_DIRECTORIES': INCLUDE_DIRECTORIES,
+            'INPUT_PATHS': PATHS,
             'INPUT_EXCLUDES': EXCLUDES_EMPTY,
-            'INPUT_CASE_SENSITIVE': CASE_SENSITIVE,
-            'INPUT_CONTAINS': CONTAINS,
             'INPUT_REPORT_FORMAT': default,
             'INPUT_VERBOSE_LOGGING': VERBOSE_LOGGING_FALSE,
             'INPUT_FAIL_ON_VIOLATION': FAIL_ON_VIOLATION_FALSE
@@ -116,20 +112,18 @@ def test_set_failed():
 
 @pytest.mark.parametrize(
     "report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message", [
-    # (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 3, None, None),
+    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, None, None),     # default values
     (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_TRUE, EXCLUDES, FAIL_ON_VIOLATION_FALSE, 2, None, None),
-    # (REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 3, 'violations.csv', None),
-    # (REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 3, 'violations.json', None),
-    # (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_TRUE, 3, None, 'There are 3 test file naming convention violations.')
+    (REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, 'violations.csv', None),
+    (REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, 'violations.json', None),
+    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_TRUE, 4, None, 'There are 4 test file naming convention violations.')
 ])
 def test_run(monkeypatch, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message):
     def getenv_mock(key, default=''):
         env = {
             'INPUT_SUFFIXES': DEFAULT_SUFFIXES,
-            'INPUT_INCLUDE_DIRECTORIES': INCLUDE_DIRECTORIES,
+            'INPUT_PATHS': PATHS,
             'INPUT_EXCLUDES': excludes,
-            'INPUT_CASE_SENSITIVE': CASE_SENSITIVE,
-            'INPUT_CONTAINS': CONTAINS,
             'INPUT_REPORT_FORMAT': report_format,
             'INPUT_VERBOSE_LOGGING': verbose_logging,
             'INPUT_FAIL_ON_VIOLATION': fail_on_violation
@@ -137,8 +131,8 @@ def test_run(monkeypatch, report_format, verbose_logging, excludes, fail_on_viol
         return env.get(key, 'test_value')
 
     monkeypatch.setattr(os, 'getenv', getenv_mock)
-    with (patch('src.file_suffix_inspector.set_output', new=mock_set_output),
-          patch('src.file_suffix_inspector.set_failed', new=mock_set_failed)):
+    with (patch('src.filename_inspector.set_output', new=mock_set_output),
+          patch('src.filename_inspector.set_failed', new=mock_set_failed)):
         run()
         assert output_values['violation_count'] == str(expected_violation_count)
         if expected_report:
@@ -148,8 +142,8 @@ def test_run(monkeypatch, report_format, verbose_logging, excludes, fail_on_viol
 
 
 def test_run_exception_handling():
-    with patch('src.file_suffix_inspector.get_input', side_effect=Exception('Test exception')), \
-            patch('src.file_suffix_inspector.set_failed', new=mock_set_failed):
+    with patch('src.filename_inspector.get_input', side_effect=Exception('Test exception')), \
+            patch('src.filename_inspector.set_failed', new=mock_set_failed):
         run()
         assert failed_message == 'Action failed with error: Test exception'
 

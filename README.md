@@ -18,33 +18,23 @@
 The **Filename Inspector** GitHub Action is designed to ensure naming conventions in project files within specified repository directories. It scans for project files and reports any missing specified suffixes, helping maintain consistency and adherence to project standards. The tool is not limited to any programming language files; it scans file names and ignores extensions until they are used in filters.
 
 ## How It Works
-This action scans the specified `include_directories` for project files and checks if they end with the defined `suffixes` or contain them anywhere in the filename based on the `pattern_logic.` It reports the count of files not meeting the naming conventions, with options to fail the action if violations are found.
+This action scans the specified `paths` for project files and checks if they end with the defined `suffixes` or contain them anywhere in the filename based on the `pattern_logic.` It reports the count of files not meeting the naming conventions, with options to fail the action if violations are found.
 
 ## Inputs
 ### `suffixes`
 - **Description**: List of suffixes that project files should have, separated by commas.
 - **Required**: Yes
-- **Default**: `UnitTests,IntegrationTests`
+- **Default**: `*UnitTest.*,*IntegrationTest.*`
 
-### `include_directories`
-- **Description**: List of directories to include in the pattern check. This input limits scanning to these directories only.
-- **Required**: No
-- **Default**: `src/test/`
+### `paths`
+- **Description**: List of directories to include in the pattern check.
+- **Required**: Yes
+- **Default**: `**/src/test/**/*.java,**/src/test/**/*.py`
 
 ### `excludes`
 - **Description**: List of filenames to exclude from suffix checks, separated by commas.
 - **Required**: No
-- **Default**: None
-
-### `case_sensitive`
-- **Description**: Determines if the filename check should be case-sensitive.
-- **Required**: No
-- **Default**: `true`
-
-### `contains`
-- **Description**: Switch logic from suffix (end of the filename) to contains (any part of the filename).
-- **Required**: No
-- **Default**: `false`
+- **Default**: `src/exclude_dir/*.py,tests/exclude_file.py`
 
 ### `report_format`
 - **Description**: Specifies the format of the output report. Options include console, csv, and json.
@@ -82,7 +72,8 @@ jobs:
       id: scan-test-files
       uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
       with:
-        suffixes: 'UnitTests,IntegrationTests'
+        suffixes: '*UnitTest.*,*IntegrationTest.*'
+        paths: '**/src/test/**/*.java,**/src/test/**/*.py'
 ```
 
 ### Full example
@@ -99,11 +90,9 @@ jobs:
           id: scan-test-files
           uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
           with:
-            suffixes: 'UnitTests,IntegrationTests'
-            include_directories: 'src/test/'
-            exclude_files: 'TestHelper.scala,TestUtils'
-            case_sensitive: 'true'
-            contains: 'true'
+            suffixes: '*UnitTest.*,*IntegrationTest.*'
+            paths: '**/src/test/**/*.java,**/src/test/**/*.py'
+            exclude_files: 'src/exclude_dir/*.py,tests/exclude_file.py'
             report_format: 'console'
             verbose_logging: 'false'
             fail_on_violation: 'false'
@@ -114,8 +103,8 @@ jobs:
 Clone the repository and navigate to the project directory:
 
 ```bash
-git clone https://github.com/AbsaOSS/test-file-suffix-inspector.git
-cd test-file-suffix-inspector
+git clone https://github.com/AbsaOSS/filename-inspector.git
+cd filename-inspector
 ```
 
 Install the dependencies:
@@ -150,17 +139,15 @@ Create *.sh file and place it in the project root.
 #!/bin/bash
 
 # Set environment variables based on the action inputs
-export INPUT_SUFFIXES="UnitTests,IntegrationTests"
-export INPUT_INCLUDE_DIRECTORIES="src/test/"
-export INPUT_EXCLUDES=""
-export INPUT_CASE_SENSITIVE="true"
-export INPUT_CONTAINS="false"
+export INPUT_SUFFIXES="*UnitTest.*,*IntegrationTest.*"
+export INPUT_PATHS="**/src/test/**/*.java,**/src/test/**/*.py"
+export INPUT_EXCLUDES="src/exclude_dir/*.py,tests/exclude_file.py"
 export INPUT_REPORT_FORMAT="console"
 export INPUT_VERBOSE_LOGGING="true"
 export INPUT_FAIL_ON_VIOLATION="false"
 
 # Run the Python script
-python3 ./src/file_suffix_inspector.py
+python3 ./src/filename_inspector.py
 ```
 
 
