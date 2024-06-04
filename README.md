@@ -41,12 +41,12 @@ This action scans the specified `include_directories` for test files and checks 
 - **Required**: No
 - **Default**: None
 
-### `case_sensitivity`
+### `case_sensitive`
 - **Description**: Determines if the filename check should be case-sensitive.
 - **Required**: No
 - **Default**: `true`
 
-### `logic`
+### `contains`
 - **Description**: Switch logic from suffix (end of the filename) to contains (any part of the filename).
 - **Required**: No
 - **Default**: `false`
@@ -61,13 +61,13 @@ This action scans the specified `include_directories` for test files and checks 
 - **Required**: No
 - **Default**: `false`
 
-### `fail_on_violations`
+### `fail_on_violation`
 - **Description**: Set to true to fail the action if any convention violations are detected. Set to false to continue without failure.
 - **Required**: No
 - **Default**: `false`
 
 ## Outputs
-### `conventions_violations`
+### `violation_count`
 - **Description**: Count test files not complying with the specified suffix conventions.
 
 ### `report_path`
@@ -107,11 +107,11 @@ jobs:
             suffixes: 'UnitTests,IntegrationTests'
             include_directories: 'src/test/'
             exclude_files: 'TestHelper.scala,TestUtils'
-            case_sensitivity: 'true'
-            logic: 'false'
+            case_sensitive: 'true'
+            contains: 'true'
             report_format: 'console'
             verbose_logging: 'false'
-            fail_on_violations: 'false'
+            fail_on_violation: 'false'
 ```
 
 ## How to build
@@ -159,11 +159,11 @@ export INPUT_SUFFIXES="UnitTests,IntegrationTests"
 export INPUT_INCLUDE_DIRECTORIES="src/test/"
 export INPUT_EXCLUDE_DIRECTORIES="dist,node_modules,coverage,target,.idea,.github,.git,htmlcov"
 export INPUT_EXCLUDE_FILES=""
-export INPUT_CASE_SENSITIVITY="true"
-export INPUT_LOGIC="true"
+export INPUT_CASE_SENSITIVE="true"
+export INPUT_CONTAINS="false"
 export INPUT_REPORT_FORMAT="console"
 export INPUT_VERBOSE_LOGGING="true"
-export INPUT_FAIL_ON_VIOLATIONS="false"
+export INPUT_FAIL_ON_VIOLATION="false"
 
 # Run the Python script
 python3 ./src/file_suffix_inspector.py

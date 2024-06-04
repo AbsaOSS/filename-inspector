@@ -13,15 +13,15 @@ INCLUDE_DIRECTORIES = 'src/test/'
 EXCLUDE_DIRECTORIES = 'dist,node_modules,coverage,target,.idea,.github,.git,htmlcov'
 EXCLUDE_FILES_EMPTY = ''
 EXCLUDE_FILES = 'test1.java'
-CASE_SENSITIVITY = 'true'
-LOGIC = 'true'
+CASE_SENSITIVE = 'true'
+CONTAINS = 'false'
 REPORT_FORMAT_CONSOLE = 'console'
 REPORT_FORMAT_CSV = 'csv'
 REPORT_FORMAT_JSON = 'json'
 VERBOSE_LOGGING_FALSE = 'false'
 VERBOSE_LOGGING_TRUE = 'true'
-FAIL_ON_VIOLATIONS_FALSE = 'false'
-FAIL_ON_VIOLATIONS_TRUE = 'true'
+FAIL_ON_VIOLATION_FALSE = 'false'
+FAIL_ON_VIOLATION_TRUE = 'true'
 
 # Variables & parameters
 output_values = {}
@@ -48,11 +48,11 @@ def mock_getenv(monkeypatch):
             'INPUT_INCLUDE_DIRECTORIES': INCLUDE_DIRECTORIES,
             'INPUT_EXCLUDE_DIRECTORIES': EXCLUDE_DIRECTORIES,
             'INPUT_EXCLUDE_FILES': EXCLUDE_FILES_EMPTY,
-            'INPUT_CASE_SENSITIVITY': CASE_SENSITIVITY,
-            'INPUT_LOGIC': LOGIC,
+            'INPUT_CASE_SENSITIVE': CASE_SENSITIVE,
+            'INPUT_CONTAINS': CONTAINS,
             'INPUT_REPORT_FORMAT': default,
             'INPUT_VERBOSE_LOGGING': VERBOSE_LOGGING_FALSE,
-            'INPUT_FAIL_ON_VIOLATIONS': FAIL_ON_VIOLATIONS_FALSE
+            'INPUT_FAIL_ON_VIOLATION': FAIL_ON_VIOLATION_FALSE
         }
         return env.get(key, 'test_value')
     monkeypatch.setattr(os, 'getenv', getenv_mock)
@@ -116,25 +116,26 @@ def test_set_failed():
     assert stdout == '::error::falling!'
 
 
-@pytest.mark.parametrize("report_format, verbose_logging, excluded_files, fail_on_violations, expected_violations, expected_report, expected_failed_message", [
-    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATIONS_FALSE, 3, None, None),
-    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_TRUE, EXCLUDE_FILES, FAIL_ON_VIOLATIONS_FALSE, 2, None, None),
-    (REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATIONS_FALSE, 3, 'violations.csv', None),
-    (REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATIONS_FALSE, 3, 'violations.json', None),
-    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATIONS_TRUE, 3, None, 'There are 3 test file naming convention violations.')
+@pytest.mark.parametrize(
+    "report_format, verbose_logging, excluded_files, fail_on_violation, expected_violation_count, expected_report, expected_failed_message", [
+    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATION_FALSE, 3, None, None),
+    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_TRUE, EXCLUDE_FILES, FAIL_ON_VIOLATION_FALSE, 2, None, None),
+    (REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATION_FALSE, 3, 'violations.csv', None),
+    (REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATION_FALSE, 3, 'violations.json', None),
+    (REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDE_FILES_EMPTY, FAIL_ON_VIOLATION_TRUE, 3, None, 'There are 3 test file naming convention violations.')
 ])
-def test_run(monkeypatch, report_format, verbose_logging, excluded_files, fail_on_violations, expected_violations, expected_report, expected_failed_message):
+def test_run(monkeypatch, report_format, verbose_logging, excluded_files, fail_on_violation, expected_violation_count, expected_report, expected_failed_message):
     def getenv_mock(key, default=''):
         env = {
             'INPUT_SUFFIXES': DEFAULT_SUFFIXES,
             'INPUT_INCLUDE_DIRECTORIES': INCLUDE_DIRECTORIES,
             'INPUT_EXCLUDE_DIRECTORIES': EXCLUDE_DIRECTORIES,
             'INPUT_EXCLUDE_FILES': excluded_files,
-            'INPUT_CASE_SENSITIVITY': CASE_SENSITIVITY,
-            'INPUT_LOGIC': LOGIC,
+            'INPUT_CASE_SENSITIVE': CASE_SENSITIVE,
+            'INPUT_CONTAINS': CONTAINS,
             'INPUT_REPORT_FORMAT': report_format,
             'INPUT_VERBOSE_LOGGING': verbose_logging,
-            'INPUT_FAIL_ON_VIOLATIONS': fail_on_violations
+            'INPUT_FAIL_ON_VIOLATION': fail_on_violation
         }
         return env.get(key, 'test_value')
 
@@ -142,7 +143,7 @@ def test_run(monkeypatch, report_format, verbose_logging, excluded_files, fail_o
     with (patch('src.file_suffix_inspector.set_output', new=mock_set_output),
           patch('src.file_suffix_inspector.set_failed', new=mock_set_failed)):
         run()
-        assert output_values['conventions_violations'] == str(expected_violations)
+        assert output_values['violation_count'] == str(expected_violation_count)
         if expected_report:
             assert output_values['report_path'] == expected_report
         if expected_failed_message:

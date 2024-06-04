@@ -37,30 +37,30 @@ def run():
         exclude_directories = exclude_directories_raw.split(',')
         exclude_files_raw = get_input('exclude_files')
         exclude_files = exclude_files_raw.split(',')
-        case_sensitivity = get_input('case_sensitivity') == 'true'
-        logic = get_input('logic') == 'true'
+        case_sensitive = get_input('case_sensitive') == 'true'
+        contains = get_input('contains') == 'true'
         report_format = get_input('report_format')
         verbose_logging = get_input('verbose_logging') == 'true'
-        fail_on_violations = get_input('fail_on_violations') == 'true'
+        fail_on_violation = get_input('fail_on_violation') == 'true'
 
         if verbose_logging:
             info(f'Suffixes: {suffixes}')
             info(f'Include directories: {include_directories}')
             info(f'Exclude directories: {exclude_directories}')
             info(f'Exclude files: {exclude_files}')
-            info(f'Case sensitivity: {case_sensitivity}')
-            info(f'Logic: {logic}')
+            info(f'Case sensitivity: {case_sensitive}')
+            info(f'Contains: {contains}')
             info(f'Report format: {report_format}')
-            info(f'Fail on violations: {fail_on_violations}')
+            info(f'Fail on violations: {fail_on_violation}')
 
-        violations_count = 0
+        violation_count = 0
         violations = []
 
         def scan_directory(directory: Path, level: int = 1):
             if verbose_logging:
                 info(f'Scanning directory: {directory}')
 
-            nonlocal violations_count
+            nonlocal violation_count
             nonlocal violations
             for item in directory.iterdir():
                 if item.is_dir():
@@ -79,17 +79,17 @@ def run():
                                     info(f'Excluded file: {item}')
                                 continue
 
-                            check_filename_with_extension = item.name if case_sensitivity else item.name.lower()
+                            check_filename_with_extension = item.name if case_sensitive else item.name.lower()
                             check_filename = check_filename_with_extension.split(".")[0]
                             matches_suffix = any(
-                                (check_filename.endswith(suffix) if logic else suffix in check_filename)
-                                for suffix in (suffixes if case_sensitivity else map(str.lower, suffixes))
+                                (check_filename.endswith(suffix) if contains else suffix in check_filename)
+                                for suffix in (suffixes if case_sensitive else map(str.lower, suffixes))
                             )
 
                             if not matches_suffix:
                                 if verbose_logging:
                                     info(f'Violating file: {item}')
-                                violations_count += 1
+                                violation_count += 1
                                 violations.append(str(item))
                             else:
                                 if verbose_logging:
@@ -97,10 +97,10 @@ def run():
 
         scan_directory(Path.cwd())
 
-        set_output('conventions_violations', str(violations_count))
+        set_output('violation_count', str(violation_count))
 
         if report_format == 'console' or verbose_logging:
-            print(f'Total violations: {violations_count}')
+            print(f'Total violations: {violation_count}')
             print(f'Violating files: {violations}')
 
         if report_format == 'csv':
@@ -113,8 +113,8 @@ def run():
                 json.dump({'violations': violations}, file)
             set_output('report_path', 'violations.json')
 
-        if fail_on_violations and violations_count > 0:
-            set_failed(f'There are {violations_count} test file naming convention violations.')
+        if fail_on_violation and violation_count > 0:
+            set_failed(f'There are {violation_count} test file naming convention violations.')
 
     except Exception as error:
         print(f'Action failed with error: {error}')
