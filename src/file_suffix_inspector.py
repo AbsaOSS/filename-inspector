@@ -33,10 +33,8 @@ def run():
         suffixes = suffixes_raw.split(',') if suffixes_raw else []
         include_directories_raw = get_input('include_directories')
         include_directories = include_directories_raw.split(',')
-        exclude_directories_raw = get_input('exclude_directories')
-        exclude_directories = exclude_directories_raw.split(',')
-        exclude_files_raw = get_input('exclude_files')
-        exclude_files = exclude_files_raw.split(',')
+        excludes_raw = get_input('excludes')
+        excludes = excludes_raw.split(',')
         case_sensitive = get_input('case_sensitive') == 'true'
         contains = get_input('contains') == 'true'
         report_format = get_input('report_format')
@@ -46,8 +44,7 @@ def run():
         if verbose_logging:
             info(f'Suffixes: {suffixes}')
             info(f'Include directories: {include_directories}')
-            info(f'Exclude directories: {exclude_directories}')
-            info(f'Exclude files: {exclude_files}')
+            info(f'Excludes: {excludes}')
             info(f'Case sensitivity: {case_sensitive}')
             info(f'Contains: {contains}')
             info(f'Report format: {report_format}')
@@ -64,17 +61,13 @@ def run():
             nonlocal violations
             for item in directory.iterdir():
                 if item.is_dir():
-                    if level == 1 and item.name in exclude_directories:
-                        if verbose_logging:
-                            info(f'Skipping excluded directory: {item.name}')
-                    else:
-                        scan_directory(item, level + 1)
+                    scan_directory(item, level + 1)
                 else:
                     for include_dir in include_directories:
                         # Check if item path contains the include directory
                         if str(item).__contains__(include_dir):
-                            # CHeck if item is defined as an exception to exclude
-                            if item.name in exclude_files:
+                            # Check if item is defined as an exception to exclude
+                            if item.name in excludes:
                                 if verbose_logging:
                                     info(f'Excluded file: {item}')
                                 continue

@@ -1,4 +1,4 @@
-# Test File Suffix Inspector
+# Filename Inspector
 
 - [Description](#description)
 - [How It Works](#how-it-works)
@@ -15,14 +15,14 @@
 - [License](#license)
 
 ## Description
-The **Test File Suffix Inspector** GitHub Action is designed to ensure naming conventions in test files within specified repository directories. It scans for test files and reports any missing specified suffixes, helping maintain consistency and adherence to project standards. The tool is not limited to any programming language files; it scans file names and ignores extensions until they are used in filters.
+The **Filename Inspector** GitHub Action is designed to ensure naming conventions in project files within specified repository directories. It scans for project files and reports any missing specified suffixes, helping maintain consistency and adherence to project standards. The tool is not limited to any programming language files; it scans file names and ignores extensions until they are used in filters.
 
 ## How It Works
-This action scans the specified `include_directories` for test files and checks if they end with the defined `suffixes` or contain them anywhere in the filename based on the `pattern_logic.` It reports the count of files not meeting the naming conventions, with options to fail the action if violations are found.
+This action scans the specified `include_directories` for project files and checks if they end with the defined `suffixes` or contain them anywhere in the filename based on the `pattern_logic.` It reports the count of files not meeting the naming conventions, with options to fail the action if violations are found.
 
 ## Inputs
 ### `suffixes`
-- **Description**: List of suffixes that test files should have, separated by commas.
+- **Description**: List of suffixes that project files should have, separated by commas.
 - **Required**: Yes
 - **Default**: `UnitTests,IntegrationTests`
 
@@ -31,12 +31,7 @@ This action scans the specified `include_directories` for test files and checks 
 - **Required**: No
 - **Default**: `src/test/`
 
-### `exclude_directories`
-- **Description**: List of directories to exclude from scanning, separated by commas.
-- **Required**: No
-- **Default**: `dist,node_modules,coverage,target,.idea,.github,.git`
-
-### `exclude_files`
+### `excludes`
 - **Description**: List of filenames to exclude from suffix checks, separated by commas.
 - **Required**: No
 - **Default**: None
@@ -68,7 +63,7 @@ This action scans the specified `include_directories` for test files and checks 
 
 ## Outputs
 ### `violation_count`
-- **Description**: Count test files not complying with the specified suffix conventions.
+- **Description**: Count of files not complying with the specified suffix conventions.
 
 ### `report_path`
 - **Description**: Path to the generated report file.
@@ -76,14 +71,14 @@ This action scans the specified `include_directories` for test files and checks 
 ## Usage Example
 ### Default
 ```yaml
-name: Check Test File Naming Conventions
+name: Check Project Files Naming Conventions
 on: [push]
 jobs:
   check_naming:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Test File Suffix Inspector Default
+    - name: Filename Inspector Default
       id: scan-test-files
       uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
       with:
@@ -92,7 +87,7 @@ jobs:
 
 ### Full example
 ```yaml
-name: Check Test File Naming Conventions
+name: Check Project Files Naming Conventions
 on: [push]
 jobs:
   check_naming:
@@ -100,7 +95,7 @@ jobs:
       steps:
         - uses: actions/checkout@v2
 
-        - name: Test File Suffix Inspector Full Custom
+        - name: Filename Inspector Full Custom
           id: scan-test-files
           uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
           with:
@@ -157,8 +152,7 @@ Create *.sh file and place it in the project root.
 # Set environment variables based on the action inputs
 export INPUT_SUFFIXES="UnitTests,IntegrationTests"
 export INPUT_INCLUDE_DIRECTORIES="src/test/"
-export INPUT_EXCLUDE_DIRECTORIES="dist,node_modules,coverage,target,.idea,.github,.git,htmlcov"
-export INPUT_EXCLUDE_FILES=""
+export INPUT_EXCLUDES=""
 export INPUT_CASE_SENSITIVE="true"
 export INPUT_CONTAINS="false"
 export INPUT_REPORT_FORMAT="console"
