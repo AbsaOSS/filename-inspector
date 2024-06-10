@@ -92,7 +92,7 @@ jobs:
           with:
             suffixes: '*UnitTest.*,*IntegrationTest.*'
             paths: '**/src/test/**/*.java,**/src/test/**/*.py'
-            exclude_files: 'src/exclude_dir/*.py,tests/exclude_file.py'
+            excludes: 'src/exclude_dir/*.py,tests/exclude_file.py'
             report_format: 'console'
             verbose_logging: 'false'
             fail_on_violation: 'false'
