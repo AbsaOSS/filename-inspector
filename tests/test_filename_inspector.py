@@ -4,7 +4,7 @@ import tempfile
 import pytest
 import os
 
-from unittest.mock import patch
+from unittest.mock import patch, mock_open
 from src.filename_inspector import get_input, set_output, set_failed, run
 
 # Constants
@@ -72,8 +72,11 @@ def test_set_output_env_var_set():
 
 def test_set_output_env_var_not_set():
     with patch.dict(os.environ, {}, clear=True):
-        with pytest.raises(EnvironmentError, match='GITHUB_OUTPUT environment variable is not set.'):
+        # Using mock_open with an in-memory stream to simulate file writing
+        mock_file = mock_open()
+        with patch('builtins.open', mock_file):
             set_output('test_name', 'test_value')
+            mock_file().write.assert_called_with('test_name=test_value\n')
 
 
 @pytest.mark.parametrize("name, value, expected", [

@@ -10,13 +10,10 @@ def get_input(name: str) -> str:
     return value
 
 
-def set_output(name: str, value: str):
-    output_file = os.getenv('GITHUB_OUTPUT', None)
-    if output_file:
-        with open(output_file, 'a') as f:
-            f.write(f'{name}={value}\n')
-    else:
-        raise EnvironmentError('GITHUB_OUTPUT environment variable is not set.')
+def set_output(name: str, value: str, default_output_path: str = "default_output.txt"):
+    output_file = os.getenv('GITHUB_OUTPUT', default_output_path)
+    with open(output_file, 'a') as f:
+        f.write(f'{name}={value}\n')
 
 
 def set_failed(message: str):

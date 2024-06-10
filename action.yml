@@ -34,7 +34,7 @@ runs:
   using: 'composite'
   steps:
     - name: Scan test files for suffix conventions
-      id: scan-test-files
+      id: filename-inspector
       env:
         INPUT_SUFFIXES: ${{ inputs.suffixes }}
         INPUT_PATHS: ${{ inputs.paths }}
@@ -43,5 +43,5 @@ runs:
         INPUT_VERBOSE_LOGGING: ${{ inputs.verbose_logging }}
         INPUT_FAIL_ON_VIOLATION: ${{ inputs.fail_on_violation }}
       run: |
-        python3 ${{ github.action_path }}/src/file_suffix_inspector.py
+        python3 ${{ github.action_path }}/src/filename_inspector.py
       shell: bash
