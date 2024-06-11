@@ -1,6 +1,8 @@
 import contextlib
 import io
 import tempfile
+from unittest import mock
+
 import pytest
 import os
 
@@ -100,17 +102,17 @@ def test_get_input(mock_getenv):
 
 def test_set_failed():
     test_message = 'falling!'
-    with pytest.raises(SystemExit) as pytest_wrapped_e:
-        set_failed(test_message)
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == 1
-    with io.StringIO() as buf, contextlib.redirect_stdout(buf):
-        try:
+
+    # Mock the logging.error method
+    with mock.patch('logging.error') as mock_log_error:
+        # Test the SystemExit exception
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
             set_failed(test_message)
-        except SystemExit:
-            pass
-        stdout = buf.getvalue().strip()
-    assert stdout == '::error::falling!'
+        assert pytest_wrapped_e.type == SystemExit
+        assert pytest_wrapped_e.value.code == 1
+
+        # Ensure logging.error was called with the correct message
+        mock_log_error.assert_called_once_with(test_message)
 
 
 @pytest.mark.parametrize(

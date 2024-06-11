@@ -21,7 +21,7 @@ def set_output(name: str, value: str, default_output_path: str = "default_output
 
 
 def set_failed(message: str):
-    print(f'::error::{message}')
+    logging.error(message)
     exit(1)
 
 
