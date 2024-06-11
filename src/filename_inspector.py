@@ -21,33 +21,35 @@ def set_output(name: str, value: str, default_output_path: str = "default_output
 
 
 def set_failed(message: str):
-    logging.error(f'::error::{message}')
+    print(f'::error::{message}')
     exit(1)
 
 
+def _matches_name_patterns(file, name_patterns):
+    for name_pattern in name_patterns:
+        if fnmatch.fnmatch(file, name_pattern):
+            return True
+    return False
+
+
+def _matches_exclude(file, excludes):
+    for exclude in excludes:
+        if fnmatch.fnmatch(file, exclude):
+            return True
+    return False
+
+
 def find_non_matching_files(name_patterns, paths, excludes):
-    def matches_name_patterns(file, name_patterns):
-        for name_pattern in name_patterns:
-            if fnmatch.fnmatch(file, name_pattern):
-                return True
-        return False
-
-    def matches_exclude(file, excludes):
-        for exclude in excludes:
-            if fnmatch.fnmatch(file, exclude):
-                return True
-        return False
-
     non_matching_files = []
 
     # Iterate over each glob pattern to find files
     for path in paths:
         for file in glob.glob(path, recursive=True):
             # Check if the file matches any of the exclude patterns
-            if matches_exclude(file, excludes):
+            if _matches_exclude(file, excludes):
                 continue
             # Check if the file matches any of the name patterns
-            if not matches_name_patterns(file, name_patterns):
+            if not _matches_name_patterns(file, name_patterns):
                 non_matching_files.append(file)
 
     return non_matching_files
