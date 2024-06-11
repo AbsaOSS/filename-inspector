@@ -21,7 +21,7 @@ def set_output(name: str, value: str, default_output_path: str = "default_output
 
 
 def set_failed(message: str):
-    print(f'::error::{message}')
+    logging.error(f'::error::{message}')
     exit(1)
 
 
@@ -61,9 +61,9 @@ def run():
         paths = paths_raw.split(',')
         excludes_raw = get_input('excludes')
         excludes = excludes_raw.split(',')
-        report_format = get_input('report_format')
-        verbose_logging = get_input('verbose_logging') == 'true'
-        fail_on_violation = get_input('fail_on_violation') == 'true'
+        report_format = get_input('report_format').lower()
+        verbose_logging = get_input('verbose_logging').lower() == 'true'
+        fail_on_violation = get_input('fail_on_violation').lower() == 'true'
 
         if verbose_logging:
             logging.getLogger().setLevel(logging.DEBUG)
@@ -80,8 +80,8 @@ def run():
         set_output('violation_count', str(violation_count))
 
         if report_format == 'console' or verbose_logging:
-            print(f'Total violations: {violation_count}')
-            print(f'Violating files: {violations}')
+            logging.warning(f'Total violations: {violation_count}')
+            logging.warning(f'Violating files: {violations}')
 
         if report_format == 'csv':
             with open('violations.csv', mode='w', newline='') as file:
@@ -97,7 +97,7 @@ def run():
             set_failed(f'There are {violation_count} test file naming convention violations.')
 
     except Exception as error:
-        print(f'Action failed with error: {error}')
+        logging.error(f'Action failed with error: {error}')
         set_failed(f'Action failed with error: {error}')
 
 
