@@ -4,6 +4,7 @@ import logging
 import os
 import json
 import csv
+import re
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -25,20 +26,6 @@ def set_failed(message: str):
     exit(1)
 
 
-def _matches_name_patterns(file, name_patterns):
-    for name_pattern in name_patterns:
-        if fnmatch.fnmatch(file, name_pattern):
-            return True
-    return False
-
-
-def _matches_exclude(file, excludes):
-    for exclude in excludes:
-        if fnmatch.fnmatch(file, exclude):
-            return True
-    return False
-
-
 def find_non_matching_files(name_patterns, paths, excludes):
     non_matching_files = []
 
@@ -50,10 +37,10 @@ def find_non_matching_files(name_patterns, paths, excludes):
 
         for file in glob.glob(path, recursive=True):
             # Check if the file matches any of the exclude patterns
-            if _matches_exclude(file, excludes):
+            if any(fnmatch.fnmatch(file, e) for e in excludes):
                 continue
             # Check if the file matches any of the name patterns
-            if os.path.isfile(file) and not _matches_name_patterns(file, name_patterns):
+            if os.path.isfile(file) and not any(fnmatch.fnmatch(file, p) for p in name_patterns):
                 non_matching_files.append(file)
 
     return non_matching_files
