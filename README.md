@@ -15,26 +15,26 @@
 - [License](#license)
 
 ## Description
-The **Filename Inspector** GitHub Action is designed to ensure naming conventions in project files within specified repository directories. It scans for project files and reports any missing specified suffixes, helping maintain consistency and adherence to project standards. The tool is not limited to any programming language files; it scans file names and ignores extensions until they are used in filters.
+The **Filename Inspector** GitHub Action is designed to ensure naming conventions in project files within specified repository directories. It scans for project files and reports any missing specified file name patterns, helping maintain consistency and adherence to project standards. The tool is not limited to any programming language files; it scans file names and ignores extensions until they are used in filters.
 
 ## How It Works
-This action scans the specified `paths` for project files and checks if they end with the defined `suffixes` or contain them anywhere in the filename based on the `pattern_logic.` It reports the count of files not meeting the naming conventions, with options to fail the action if violations are found.
+This action scans the specified `paths` for project files and checks if their file names fit the `name_patterns.` It reports the count of files not meeting the naming conventions, with options to fail the action if violations are found.
 
 ## Inputs
-### `suffixes`
-- **Description**: List of suffixes that project files should have, separated by commas.
+### `name_patterns`
+- **Description**: List of file name [glob](https://en.wikipedia.org/wiki/Glob_(programming)) patterns that project files should have, separated by commas.
 - **Required**: Yes
-- **Default**: `*UnitTest.*,*IntegrationTest.*`
+- **Example**: `*UnitTest.*,*IntegrationTest.*`
 
 ### `paths`
-- **Description**: List of directories to include in the pattern check.
+- **Description**: List of directories to include in the glob pattern check, separated by commas.
 - **Required**: Yes
-- **Default**: `**/src/test/**/*.java,**/src/test/**/*.py`
+- **Example**: `**/src/test/**/*.java,**/src/test/**/*.py`
 
 ### `excludes`
-- **Description**: List of filenames to exclude from suffix checks, separated by commas.
+- **Description**: List of filenames to exclude from glob pattern checks, separated by commas.
 - **Required**: No
-- **Default**: `src/exclude_dir/*.py,tests/exclude_file.py`
+- **Default**: ``
 
 ### `report_format`
 - **Description**: Specifies the format of the output report. Options include console, csv, and json.
@@ -47,13 +47,13 @@ This action scans the specified `paths` for project files and checks if they end
 - **Default**: `false`
 
 ### `fail_on_violation`
-- **Description**: Set to true to fail the action if any convention violations are detected. Set to false to continue without failure.
+- **Description**: Set to true to fail the action if any convention violations are detected. Set false to continue without failure.
 - **Required**: No
 - **Default**: `false`
 
 ## Outputs
 ### `violation_count`
-- **Description**: Count of files not complying with the specified suffix conventions.
+- **Description**: Count of files not complying with the specified file name patterns.
 
 ### `report_path`
 - **Description**: Path to the generated report file.
@@ -70,9 +70,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Filename Inspector Default
       id: scan-test-files
-      uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
+      uses: AbsaOSS/filename-inspector@v0.1.0
       with:
-        suffixes: '*UnitTest.*,*IntegrationTest.*'
+        name_patterns: '*UnitTest.*,*IntegrationTest.*'
         paths: '**/src/test/**/*.java,**/src/test/**/*.py'
 ```
 
@@ -88,9 +88,9 @@ jobs:
 
         - name: Filename Inspector Full Custom
           id: scan-test-files
-          uses: AbsaOSS/test-file-suffix-inspector@v0.1.0
+          uses: AbsaOSS/filename-inspector@v0.1.0
           with:
-            suffixes: '*UnitTest.*,*IntegrationTest.*'
+            name_patterns: '*UnitTest.*,*IntegrationTest.*'
             paths: '**/src/test/**/*.java,**/src/test/**/*.py'
             excludes: 'src/exclude_dir/*.py,tests/exclude_file.py'
             report_format: 'console'
@@ -139,7 +139,7 @@ Create *.sh file and place it in the project root.
 #!/bin/bash
 
 # Set environment variables based on the action inputs
-export INPUT_SUFFIXES="*UnitTest.*,*IntegrationTest.*"
+export INPUT_NAME_PATTERNS="*UnitTest.*,*IntegrationTest.*"
 export INPUT_PATHS="**/src/test/**/*.java,**/src/test/**/*.py"
 export INPUT_EXCLUDES="src/exclude_dir/*.py,tests/exclude_file.py"
 export INPUT_REPORT_FORMAT="console"

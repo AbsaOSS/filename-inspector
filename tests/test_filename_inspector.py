@@ -8,7 +8,7 @@ from unittest.mock import patch, mock_open
 from src.filename_inspector import get_input, set_output, set_failed, run
 
 # Constants
-DEFAULT_SUFFIXES = '*UnitTest.*,*IntegrationTest.*'
+DEFAULT_NAME_PATTERNS = '*UnitTest.*,*IntegrationTest.*'
 PATHS = '**/src/test/**/*.java,**/src/test/**/*.py'
 EXCLUDES_EMPTY = ''
 EXCLUDES = '*src/exclude_dir/*,*ttests.java,*java/test1.java'
@@ -41,7 +41,7 @@ def reset_failed_message():
 def mock_getenv(monkeypatch):
     def getenv_mock(key, default=''):
         env = {
-            'INPUT_SUFFIXES': DEFAULT_SUFFIXES,
+            'INPUT_NAME_PATTERNS': DEFAULT_NAME_PATTERNS,
             'INPUT_PATHS': PATHS,
             'INPUT_EXCLUDES': EXCLUDES_EMPTY,
             'INPUT_REPORT_FORMAT': default,
@@ -124,7 +124,7 @@ def test_set_failed():
 def test_run(monkeypatch, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message):
     def getenv_mock(key, default=''):
         env = {
-            'INPUT_SUFFIXES': DEFAULT_SUFFIXES,
+            'INPUT_NAME_PATTERNS': DEFAULT_NAME_PATTERNS,
             'INPUT_PATHS': PATHS,
             'INPUT_EXCLUDES': excludes,
             'INPUT_REPORT_FORMAT': report_format,

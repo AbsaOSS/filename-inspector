@@ -1,8 +1,12 @@
 import fnmatch
 import glob
+import logging
 import os
 import json
 import csv
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def get_input(name: str) -> str:
@@ -21,33 +25,29 @@ def set_failed(message: str):
     exit(1)
 
 
-def info(message: str):
-    print(message)
-
-
-def find_non_matching_files(glob_patterns, suffix_patterns, exclude_patterns):
-    def matches_suffix(file, suffix_patterns):
-        for pattern in suffix_patterns:
-            if fnmatch.fnmatch(file, pattern):
+def find_non_matching_files(name_patterns, paths, excludes):
+    def matches_name_patterns(file, name_patterns):
+        for name_pattern in name_patterns:
+            if fnmatch.fnmatch(file, name_pattern):
                 return True
         return False
 
-    def matches_exclude(file, exclude_patterns):
-        for pattern in exclude_patterns:
-            if fnmatch.fnmatch(file, pattern):
+    def matches_exclude(file, excludes):
+        for exclude in excludes:
+            if fnmatch.fnmatch(file, exclude):
                 return True
         return False
 
     non_matching_files = []
 
     # Iterate over each glob pattern to find files
-    for pattern in glob_patterns:
-        for file in glob.glob(pattern, recursive=True):
+    for path in paths:
+        for file in glob.glob(path, recursive=True):
             # Check if the file matches any of the exclude patterns
-            if matches_exclude(file, exclude_patterns):
+            if matches_exclude(file, excludes):
                 continue
-            # Check if the file matches any of the suffix patterns
-            if not matches_suffix(file, suffix_patterns):
+            # Check if the file matches any of the name patterns
+            if not matches_name_patterns(file, name_patterns):
                 non_matching_files.append(file)
 
     return non_matching_files
@@ -55,8 +55,8 @@ def find_non_matching_files(glob_patterns, suffix_patterns, exclude_patterns):
 
 def run():
     try:
-        suffixes_raw = get_input('suffixes')
-        suffixes = suffixes_raw.split(',') if suffixes_raw else []
+        name_patterns_raw = get_input('name_patterns')
+        name_patterns = name_patterns_raw.split(',') if name_patterns_raw else []
         paths_raw = get_input('paths')
         paths = paths_raw.split(',')
         excludes_raw = get_input('excludes')
@@ -66,13 +66,15 @@ def run():
         fail_on_violation = get_input('fail_on_violation') == 'true'
 
         if verbose_logging:
-            info(f'Suffixes: {suffixes}')
-            info(f'Paths: {paths}')
-            info(f'Excludes: {excludes}')
-            info(f'Report format: {report_format}')
-            info(f'Fail on violations: {fail_on_violation}')
+            logging.getLogger().setLevel(logging.DEBUG)
 
-        violations = find_non_matching_files(paths, suffixes, excludes)
+        logging.debug(f'Name patterns: {name_patterns}')
+        logging.debug(f'Paths: {paths}')
+        logging.debug(f'Excludes: {excludes}')
+        logging.debug(f'Report format: {report_format}')
+        logging.debug(f'Fail on violations: {fail_on_violation}')
+
+        violations = find_non_matching_files(name_patterns, paths, excludes)
         violation_count = len(violations)
 
         set_output('violation_count', str(violation_count))
