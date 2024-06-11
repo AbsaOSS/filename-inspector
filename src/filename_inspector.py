@@ -44,12 +44,16 @@ def find_non_matching_files(name_patterns, paths, excludes):
 
     # Iterate over each glob pattern to find files
     for path in paths:
+        if '.' in path:
+            logging.error(f"Skipped path to file value '{path}'. Only path to directories are accepted.")
+            continue
+
         for file in glob.glob(path, recursive=True):
             # Check if the file matches any of the exclude patterns
             if _matches_exclude(file, excludes):
                 continue
             # Check if the file matches any of the name patterns
-            if not _matches_name_patterns(file, name_patterns):
+            if os.path.isfile(file) and not _matches_name_patterns(file, name_patterns):
                 non_matching_files.append(file)
 
     return non_matching_files

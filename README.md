@@ -29,7 +29,7 @@ This action scans the specified `paths` for project files and checks if their fi
 ### `paths`
 - **Description**: List of directories to include in the glob pattern check, separated by commas.
 - **Required**: Yes
-- **Example**: `**/src/test/**/*.java,**/src/test/**/*.py`
+- **Example**: `**/src/test/java/**,**/src/test/scala/**`
 
 ### `excludes`
 - **Description**: List of filenames to exclude from glob pattern checks, separated by commas.
@@ -73,7 +73,7 @@ jobs:
       uses: AbsaOSS/filename-inspector@v0.1.0
       with:
         name_patterns: '*UnitTest.*,*IntegrationTest.*'
-        paths: '**/src/test/**/*.java,**/src/test/**/*.py'
+        paths: '**/src/test/java/**,**/src/test/scala/**'
 ```
 
 ### Full example
@@ -91,7 +91,7 @@ jobs:
           uses: AbsaOSS/filename-inspector@v0.1.0
           with:
             name_patterns: '*UnitTest.*,*IntegrationTest.*'
-            paths: '**/src/test/**/*.java,**/src/test/**/*.py'
+            paths: '**/src/test/java/**,**/src/test/scala/**'
             excludes: 'src/exclude_dir/*.py,tests/exclude_file.py'
             report_format: 'console'
             verbose_logging: 'false'
@@ -140,7 +140,7 @@ Create *.sh file and place it in the project root.
 
 # Set environment variables based on the action inputs
 export INPUT_NAME_PATTERNS="*UnitTest.*,*IntegrationTest.*"
-export INPUT_PATHS="**/src/test/**/*.java,**/src/test/**/*.py"
+export INPUT_PATHS="**/src/test/java/**,**/src/test/scala/**"
 export INPUT_EXCLUDES="src/exclude_dir/*.py,tests/exclude_file.py"
 export INPUT_REPORT_FORMAT="console"
 export INPUT_VERBOSE_LOGGING="true"
