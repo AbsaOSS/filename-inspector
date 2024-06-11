@@ -1,0 +1,47 @@
+name: 'Filename Inspector'
+description: 'Scans files to ensure naming conventions, reporting any files missing specified name patterns.'
+inputs:
+  name-patterns:
+    description: 'List of glob patterns that tested file name should have, separated by commas (e.g., "*UnitTest.*,*IntegrationTest.*").'
+    required: true
+  paths:
+    description: 'List of glob patterns of paths to include to control, separated by commas (e.g., "**/src/test/**/*.java,**/src/test/**/*.py").'
+    required: true
+  excludes:
+    description: 'List of glob patterns paths to exclude from controls, separated by commas (e.g., "src/exclude_dir/*.py,tests/exclude_file.py").'
+    required: false
+    default: ''
+  report-format:
+    description: 'Specifies the format of the output report. Options: console, csv, and json.'
+    required: false
+    default: 'console'
+  verbose-logging:
+    description: 'Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.'
+    required: false
+    default: 'false'
+  fail-on-violation:
+    description: 'Set to true to fail the action if any convention violations are detected. Set to false to continue without failure.'
+    required: false
+    default: 'false'
+outputs:
+  violation-count:
+    description: 'Count of files that do not comply with the specified file name conventions.'
+    value: ${{ steps.scan-test-files.outputs.violation_count }}
+  report-path:
+    description: 'Path to the generated report file.'
+    value: ${{ steps.scan-test-files.outputs.report_path }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Scan files
+      id: filename-inspector
+      env:
+        INPUT_NAME_PATTERNS: ${{ inputs.name-patterns }}
+        INPUT_PATHS: ${{ inputs.paths }}
+        INPUT_EXCLUDES: ${{ inputs.excludes }}
+        INPUT_REPORT_FORMAT: ${{ inputs.report-format }}
+        INPUT_VERBOSE_LOGGING: ${{ inputs.verbose-logging }}
+        INPUT_FAIL_ON_VIOLATION: ${{ inputs.fail-on-violation }}
+      run: |
+        python3 ${{ github.action_path }}/src/filename_inspector.py
+      shell: bash
