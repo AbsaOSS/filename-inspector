@@ -27,9 +27,9 @@ This action scans the specified `paths` for project files and checks if their fi
 - **Example**: `*UnitTest.*,*IntegrationTest.*`
 
 ### `paths`
-- **Description**: List of directories to include in the glob pattern check, separated by commas.
+- **Description**: List of paths to include in the glob pattern check, separated by commas.
 - **Required**: Yes
-- **Example**: `**/src/test/java/**,**/src/test/scala/**`
+- **Example**: `**/src/test/java/**,**/src/test/scala/**/*.txt`
 
 ### `excludes`
 - **Description**: List of filenames to exclude from glob pattern checks, separated by commas.
