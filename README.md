@@ -21,7 +21,7 @@ The **Filename Inspector** GitHub Action is designed to ensure naming convention
 This action scans the specified `paths` for project files and checks if their file names fit the `name_patterns.` It reports the count of files not meeting the naming conventions, with options to fail the action if violations are found.
 
 ## Inputs
-### `name_patterns`
+### `name-patterns`
 - **Description**: List of file name [glob](https://en.wikipedia.org/wiki/Glob_(programming)) patterns that project files should have, separated by commas.
 - **Required**: Yes
 - **Example**: `*UnitTest.*,*IntegrationTest.*`
@@ -42,8 +42,8 @@ This action scans the specified `paths` for project files and checks if their fi
 - **Default**: `console`
 - **Options**:
   - `console`: Prints the list of violated files to the console.
-  - `csv`: Generates a CSV file with the report. No output prints to the console. Path to the report file is provided in the `report-path` output.
-  - `json`: Generates a JSON file with the report. No output prints to the console. Path to the report file is provided in the `report-path` output.
+  - `csv`: Generates a CSV file with the report. No printout of violated files to the console, unless verbose is enabled. Path to the report file is provided in the `report-path` output.
+  - `json`: Generates a JSON file with the report. No printout of violated files to the console, unless verbose is enabled. Path to the report file is provided in the `report-path` output.
 
 ### `verbose-logging`
 - **Description**: Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.

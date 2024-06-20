@@ -79,9 +79,8 @@ def run():
         set_action_output('violation-count', str(violation_count))
 
         logging.info(f'Total violations: {violation_count}')
-        logging.debug(f'Violating files: {violations}')
 
-        if report_format == 'console' and not verbose_logging:
+        if report_format == 'console' or verbose_logging:
             logging.info(f'Violating files: {violations}')
 
         if report_format == 'csv':
