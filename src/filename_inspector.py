@@ -69,7 +69,7 @@ def run():
         violations = find_non_matching_files(name_patterns, paths, excludes)
         violation_count = len(violations)
 
-        set_output('violation_count', str(violation_count))
+        set_output('violation-count', str(violation_count))
 
         if report_format == 'console' or verbose_logging:
             logging.warning(f'Total violations: {violation_count}')

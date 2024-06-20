@@ -141,9 +141,9 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
     with (patch('src.filename_inspector.set_output', new=mock_set_output),
           patch('src.filename_inspector.set_failed', new=mock_set_failed)):
         run()
-        assert output_values['violation_count'] == str(expected_violation_count)
+        assert output_values['violation-count'] == str(expected_violation_count)
         if expected_report:
-            assert output_values['report_path'] == expected_report
+            assert output_values['report-path'] == expected_report
         if expected_failed_message:
             assert failed_message == expected_failed_message
 
