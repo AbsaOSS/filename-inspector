@@ -40,6 +40,10 @@ This action scans the specified `paths` for project files and checks if their fi
 - **Description**: Specifies the format of the output report. Options include console, csv, and json.
 - **Required**: No
 - **Default**: `console`
+- **Options**:
+  - `console`: Prints the report to the console as a warning log message.
+  - `csv`: Generates a CSV file with the report. No output prints to the console. Path to the report file is provided in the `report-path` output.
+  - `json`: Generates a JSON file with the report. No output prints to the console. Path to the report file is provided in the `report-path` output.
 
 ### `verbose-logging`
 - **Description**: Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.
@@ -56,7 +60,7 @@ This action scans the specified `paths` for project files and checks if their fi
 - **Description**: Count of files not complying with the specified file name patterns.
 
 ### `report-path`
-- **Description**: Path to the generated report file.
+- **Description**: Path to the generated report file. **Not used** if the `report-format` is set to `console`.
 
 ## Usage Example
 ### Default

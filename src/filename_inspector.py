@@ -71,9 +71,13 @@ def run():
 
         set_output('violation-count', str(violation_count))
 
-        if report_format == 'console' or verbose_logging:
-            logging.warning(f'Total violations: {violation_count}')
-            logging.warning(f'Violating files: {violations}')
+        if verbose_logging:
+            print(f'Total violations: {violation_count}')
+            print(f'Violating files: {violations}')
+
+        if report_format == 'console':
+            logging.info(f'Total violations: {violation_count}')
+            logging.info(f'Violating files: {violations}')
 
         if report_format == 'csv':
             with open('violations.csv', mode='w', newline='') as file:
@@ -91,6 +95,17 @@ def run():
     except Exception as error:
         logging.error(f'Action failed with error: {error}')
         set_failed(f'Action failed with error: {error}')
+
+# TODO
+# Inspector
+#   - report-path - ma ukazovat na spravny soubor a jeho cestu
+
+# RLS notes generator
+#   - set_output na set_action_output
+#   - set_failed na set_action_failed
+#   -
+#   -
+#   -
 
 
 if __name__ == '__main__':
