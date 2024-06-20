@@ -36,26 +36,26 @@ This action scans the specified `paths` for project files and checks if their fi
 - **Required**: No
 - **Default**: ``
 
-### `report_format`
+### `report-format`
 - **Description**: Specifies the format of the output report. Options include console, csv, and json.
 - **Required**: No
 - **Default**: `console`
 
-### `verbose_logging`
+### `verbose-logging`
 - **Description**: Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.
 - **Required**: No
 - **Default**: `false`
 
-### `fail_on_violation`
+### `fail-on-violation`
 - **Description**: Set to true to fail the action if any convention violations are detected. Set false to continue without failure.
 - **Required**: No
 - **Default**: `false`
 
 ## Outputs
-### `violation_count`
+### `violation-count`
 - **Description**: Count of files not complying with the specified file name patterns.
 
-### `report_path`
+### `report-path`
 - **Description**: Path to the generated report file.
 
 ## Usage Example
@@ -72,7 +72,7 @@ jobs:
       id: scan-test-files
       uses: AbsaOSS/filename-inspector@v0.1.0
       with:
-        name_patterns: '*UnitTest.*,*IntegrationTest.*'
+        name-patterns: '*UnitTest.*,*IntegrationTest.*'
         paths: '**/src/test/java/**,**/src/test/scala/**'
 ```
 
@@ -90,12 +90,12 @@ jobs:
           id: scan-test-files
           uses: AbsaOSS/filename-inspector@v0.1.0
           with:
-            name_patterns: '*UnitTest.*,*IntegrationTest.*'
+            name-patterns: '*UnitTest.*,*IntegrationTest.*'
             paths: '**/src/test/java/**,**/src/test/scala/**'
             excludes: 'src/exclude_dir/*.py,tests/exclude_file.py'
-            report_format: 'console'
-            verbose_logging: 'false'
-            fail_on_violation: 'false'
+            report-format: 'console'
+            verbose-logging: 'false'
+            fail-on-violation: 'false'
 ```
 
 ## How to build

@@ -79,11 +79,11 @@ def run():
             with open('violations.csv', mode='w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerows([[violation] for violation in violations])
-            set_output('report_path', 'violations.csv')
+            set_output('report-path', 'violations.csv')
         elif report_format == 'json':
             with open('violations.json', mode='w') as file:
                 json.dump({'violations': violations}, file)
-            set_output('report_path', 'violations.json')
+            set_output('report-path', 'violations.json')
 
         if fail_on_violation and violation_count > 0:
             set_failed(f'There are {violation_count} test file naming convention violations.')
