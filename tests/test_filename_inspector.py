@@ -55,17 +55,17 @@ def mock_getenv(monkeypatch):
     monkeypatch.setattr(os, 'getenv', getenv_mock)
 
 
-def mock_set_output(name, value):
+def mock_set_action_output(name, value):
     output_values[name] = value
 
 
-def mock_set_failed(message):
+def mock_set_action_failed(message):
     global failed_message
     failed_message = message
 
 
 # Tests
-def test_set_output_env_var_set():
+def test_set_action_output_env_var_set():
     with tempfile.NamedTemporaryFile() as tmpfile:
         with patch.dict(os.environ, {'GITHUB_OUTPUT': tmpfile.name}):
             set_action_output('test_name', 'test_value')
@@ -73,7 +73,7 @@ def test_set_output_env_var_set():
             assert tmpfile.read().decode() == 'test_name=test_value\n'
 
 
-def test_set_output_env_var_not_set():
+def test_set_action_output_env_var_not_set():
     with patch.dict(os.environ, {}, clear=True):
         # Using mock_open with an in-memory stream to simulate file writing
         mock_file = mock_open()
@@ -87,7 +87,7 @@ def test_set_output_env_var_not_set():
     ('name2', 'value2', 'name2=value2\n'),
     ('foo', 'bar', 'foo=bar\n')
 ])
-def test_set_output_parametrized(name, value, expected):
+def test_set_action_output_parametrized(name, value, expected):
     with tempfile.NamedTemporaryFile() as tmpfile:
         with patch.dict(os.environ, {'GITHUB_OUTPUT': tmpfile.name}):
             set_action_output(name, value)
@@ -95,9 +95,9 @@ def test_set_output_parametrized(name, value, expected):
             assert tmpfile.read().decode() == expected
 
 
-def test_get_input(mock_getenv):
+def test_get_action_input(mock_getenv):
     with patch('os.getenv', return_value='test_value') as mock_getenv_func:
-        assert get_action_input('test') == 'test_value'
+        assert get_action_input('INPUT_TEST') == 'test_value'
         mock_getenv_func.assert_called_with('INPUT_TEST')
 
 
@@ -138,8 +138,8 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
         return env.get(key, 'test_value')
 
     monkeypatch.setattr(os, 'getenv', getenv_mock)
-    with (patch('src.filename_inspector.set_output', new=mock_set_output),
-          patch('src.filename_inspector.set_failed', new=mock_set_failed)):
+    with (patch('src.filename_inspector.set_action_output', new=mock_set_action_output),
+          patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed)):
         run()
         assert output_values['violation-count'] == str(expected_violation_count)
         if expected_report:
@@ -149,8 +149,8 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
 
 
 def test_run_exception_handling():
-    with patch('src.filename_inspector.get_input', side_effect=Exception('Test exception')), \
-            patch('src.filename_inspector.set_failed', new=mock_set_failed):
+    with patch('src.filename_inspector.get_action_input', side_effect=Exception('Test exception')), \
+            patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed):
         run()
         assert failed_message == 'Action failed with error: Test exception'
 
