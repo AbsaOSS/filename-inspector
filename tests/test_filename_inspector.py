@@ -7,7 +7,7 @@ import pytest
 import os
 
 from unittest.mock import patch, mock_open
-from src.filename_inspector import get_input, set_output, set_failed, run
+from src.filename_inspector import get_action_input, set_action_output, set_action_failed, run
 
 # Constants
 DEFAULT_NAME_PATTERNS = '*UnitTest.*,*IntegrationTest.*'
@@ -68,7 +68,7 @@ def mock_set_failed(message):
 def test_set_output_env_var_set():
     with tempfile.NamedTemporaryFile() as tmpfile:
         with patch.dict(os.environ, {'GITHUB_OUTPUT': tmpfile.name}):
-            set_output('test_name', 'test_value')
+            set_action_output('test_name', 'test_value')
             tmpfile.seek(0)
             assert tmpfile.read().decode() == 'test_name=test_value\n'
 
@@ -78,7 +78,7 @@ def test_set_output_env_var_not_set():
         # Using mock_open with an in-memory stream to simulate file writing
         mock_file = mock_open()
         with patch('builtins.open', mock_file):
-            set_output('test_name', 'test_value')
+            set_action_output('test_name', 'test_value')
             mock_file().write.assert_called_with('test_name=test_value\n')
 
 
@@ -90,14 +90,14 @@ def test_set_output_env_var_not_set():
 def test_set_output_parametrized(name, value, expected):
     with tempfile.NamedTemporaryFile() as tmpfile:
         with patch.dict(os.environ, {'GITHUB_OUTPUT': tmpfile.name}):
-            set_output(name, value)
+            set_action_output(name, value)
             tmpfile.seek(0)
             assert tmpfile.read().decode() == expected
 
 
 def test_get_input(mock_getenv):
     with patch('os.getenv', return_value='test_value') as mock_getenv_func:
-        assert get_input('test') == 'test_value'
+        assert get_action_input('test') == 'test_value'
         mock_getenv_func.assert_called_with('INPUT_TEST')
 
 
@@ -108,7 +108,7 @@ def test_set_failed():
     with mock.patch('logging.error') as mock_log_error:
         # Test the SystemExit exception
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            set_failed(test_message)
+            set_action_failed(test_message)
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 1
 

@@ -41,7 +41,7 @@ This action scans the specified `paths` for project files and checks if their fi
 - **Required**: No
 - **Default**: `console`
 - **Options**:
-  - `console`: Prints the report to the console as a warning log message.
+  - `console`: Prints the list of violated files to the console.
   - `csv`: Generates a CSV file with the report. No output prints to the console. Path to the report file is provided in the `report-path` output.
   - `json`: Generates a JSON file with the report. No output prints to the console. Path to the report file is provided in the `report-path` output.
 
