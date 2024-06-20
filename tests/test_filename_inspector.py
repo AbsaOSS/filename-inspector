@@ -7,7 +7,7 @@ import pytest
 import os
 
 from unittest.mock import patch, mock_open
-from src.filename_inspector import get_input, set_output, set_failed, run
+from src.filename_inspector import get_action_input, set_action_output, set_action_failed, run
 
 # Constants
 DEFAULT_NAME_PATTERNS = '*UnitTest.*,*IntegrationTest.*'
@@ -55,30 +55,30 @@ def mock_getenv(monkeypatch):
     monkeypatch.setattr(os, 'getenv', getenv_mock)
 
 
-def mock_set_output(name, value):
+def mock_set_action_output(name, value):
     output_values[name] = value
 
 
-def mock_set_failed(message):
+def mock_set_action_failed(message):
     global failed_message
     failed_message = message
 
 
 # Tests
-def test_set_output_env_var_set():
+def test_set_action_output_env_var_set():
     with tempfile.NamedTemporaryFile() as tmpfile:
         with patch.dict(os.environ, {'GITHUB_OUTPUT': tmpfile.name}):
-            set_output('test_name', 'test_value')
+            set_action_output('test_name', 'test_value')
             tmpfile.seek(0)
             assert tmpfile.read().decode() == 'test_name=test_value\n'
 
 
-def test_set_output_env_var_not_set():
+def test_set_action_output_env_var_not_set():
     with patch.dict(os.environ, {}, clear=True):
         # Using mock_open with an in-memory stream to simulate file writing
         mock_file = mock_open()
         with patch('builtins.open', mock_file):
-            set_output('test_name', 'test_value')
+            set_action_output('test_name', 'test_value')
             mock_file().write.assert_called_with('test_name=test_value\n')
 
 
@@ -87,17 +87,17 @@ def test_set_output_env_var_not_set():
     ('name2', 'value2', 'name2=value2\n'),
     ('foo', 'bar', 'foo=bar\n')
 ])
-def test_set_output_parametrized(name, value, expected):
+def test_set_action_output_parametrized(name, value, expected):
     with tempfile.NamedTemporaryFile() as tmpfile:
         with patch.dict(os.environ, {'GITHUB_OUTPUT': tmpfile.name}):
-            set_output(name, value)
+            set_action_output(name, value)
             tmpfile.seek(0)
             assert tmpfile.read().decode() == expected
 
 
-def test_get_input(mock_getenv):
+def test_get_action_input(mock_getenv):
     with patch('os.getenv', return_value='test_value') as mock_getenv_func:
-        assert get_input('test') == 'test_value'
+        assert get_action_input('INPUT_TEST') == 'test_value'
         mock_getenv_func.assert_called_with('INPUT_TEST')
 
 
@@ -108,7 +108,7 @@ def test_set_failed():
     with mock.patch('logging.error') as mock_log_error:
         # Test the SystemExit exception
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            set_failed(test_message)
+            set_action_failed(test_message)
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 1
 
@@ -138,19 +138,19 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
         return env.get(key, 'test_value')
 
     monkeypatch.setattr(os, 'getenv', getenv_mock)
-    with (patch('src.filename_inspector.set_output', new=mock_set_output),
-          patch('src.filename_inspector.set_failed', new=mock_set_failed)):
+    with (patch('src.filename_inspector.set_action_output', new=mock_set_action_output),
+          patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed)):
         run()
-        assert output_values['violation_count'] == str(expected_violation_count)
+        assert output_values['violation-count'] == str(expected_violation_count)
         if expected_report:
-            assert output_values['report_path'] == expected_report
+            assert output_values['report-path'] == expected_report
         if expected_failed_message:
             assert failed_message == expected_failed_message
 
 
 def test_run_exception_handling():
-    with patch('src.filename_inspector.get_input', side_effect=Exception('Test exception')), \
-            patch('src.filename_inspector.set_failed', new=mock_set_failed):
+    with patch('src.filename_inspector.get_action_input', side_effect=Exception('Test exception')), \
+            patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed):
         run()
         assert failed_message == 'Action failed with error: Test exception'
 
