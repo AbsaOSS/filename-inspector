@@ -18,7 +18,8 @@ INPUT_FAIL_ON_VIOLATION = "INPUT_FAIL_ON_VIOLATION"
 
 
 def get_action_input(name: str) -> str:
-    return os.getenv(name)
+    # Note: this is cleanup when input defined by multiple lines
+    return os.getenv(name).replace("\n", "")
 
 
 def set_action_output(name: str, value: str, default_output_path: str = "default_output.txt"):
