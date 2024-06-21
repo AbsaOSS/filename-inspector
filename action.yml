@@ -2,13 +2,13 @@ name: 'Filename Inspector'
 description: 'Scans files to ensure naming conventions, reporting any files missing specified name patterns.'
 inputs:
   name-patterns:
-    description: 'List of glob patterns that tested file name should have, separated by commas (e.g., "*UnitTest.*,*IntegrationTest.*").'
+    description: 'List of patterns that tested file name should have, separated by commas (e.g., "*UnitTest.*,*IntegrationTest.*").'
     required: true
   paths:
     description: 'List of glob patterns of paths to include to control, separated by commas (e.g., "**/src/test/**/*.java,**/src/test/**/*.py").'
     required: true
   excludes:
-    description: 'List of glob patterns paths to exclude from controls, separated by commas (e.g., "src/exclude_dir/*.py,tests/exclude_file.py").'
+    description: 'List of patterns paths to exclude from controls, separated by commas (e.g., "src/exclude_dir/*.py,tests/exclude_file.py").'
     required: false
     default: ''
   report-format:
