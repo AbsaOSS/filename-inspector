@@ -37,10 +37,6 @@ def find_non_matching_files(name_patterns, paths, excludes):
 
     # Iterate over each glob pattern to find files
     for path in paths:
-        if '.' in path:
-            logging.error(f"Skipped path to file value '{path}'. Only path to directories are accepted.")
-            continue
-
         for file in glob.glob(path, recursive=True):
             # Check if the file matches any of the exclude patterns
             if any(fnmatch.fnmatch(file, e) for e in excludes):
