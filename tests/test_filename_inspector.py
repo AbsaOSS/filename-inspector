@@ -70,7 +70,7 @@ def test_set_action_output_env_var_set():
         with patch.dict(os.environ, {'GITHUB_OUTPUT': tmpfile.name}):
             set_action_output('test_name', 'test_value')
             tmpfile.seek(0)
-            assert tmpfile.read().decode() == 'test_name=test_value\n'
+            assert 'test_name=test_value\n' == tmpfile.read().decode()
 
 
 def test_set_action_output_env_var_not_set():
@@ -92,7 +92,7 @@ def test_set_action_output_parametrized(name, value, expected):
         with patch.dict(os.environ, {'GITHUB_OUTPUT': tmpfile.name}):
             set_action_output(name, value)
             tmpfile.seek(0)
-            assert tmpfile.read().decode() == expected
+            assert expected == tmpfile.read().decode()
 
 
 def test_get_action_input(mock_getenv):
@@ -109,8 +109,8 @@ def test_set_failed():
         # Test the SystemExit exception
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             set_action_failed(test_message)
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == 1
+        assert SystemExit == pytest_wrapped_e.type
+        assert 1 == pytest_wrapped_e.value.code
 
         # Ensure logging.error was called with the correct message
         mock_log_error.assert_called_once_with(test_message)
@@ -119,7 +119,7 @@ def test_set_failed():
 @pytest.mark.parametrize(
     "paths, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message", [
     (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, None, None),     # default values
-    (PATHS_WITH_FILE, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, None, None),
+    (PATHS_WITH_FILE, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 6, None, None),
     (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_TRUE, EXCLUDES, FAIL_ON_VIOLATION_FALSE, 2, None, None),
     (PATHS, REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, 'violations.csv', None),
     (PATHS, REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, 'violations.json', None),
@@ -141,18 +141,18 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
     with (patch('src.filename_inspector.set_action_output', new=mock_set_action_output),
           patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed)):
         run()
-        assert output_values['violation-count'] == str(expected_violation_count)
+        assert str(expected_violation_count) == output_values['violation-count']
         if expected_report:
-            assert output_values['report-path'] == expected_report
+            assert expected_report == output_values['report-path']
         if expected_failed_message:
-            assert failed_message == expected_failed_message
+            assert expected_failed_message == failed_message
 
 
 def test_run_exception_handling():
     with patch('src.filename_inspector.get_action_input', side_effect=Exception('Test exception')), \
             patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed):
         run()
-        assert failed_message == 'Action failed with error: Test exception'
+        assert 'Action failed with error: Test exception' == failed_message
 
 
 # Run the tests
