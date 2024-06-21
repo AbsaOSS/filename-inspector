@@ -94,9 +94,15 @@ jobs:
           id: scan-test-files
           uses: AbsaOSS/filename-inspector@v0.1.0
           with:
-            name-patterns: '*UnitTest.*,*IntegrationTest.*'
-            paths: '**/src/test/java/**,**/src/test/scala/**'
-            excludes: 'src/exclude_dir/*.py,tests/exclude_file.py'
+            name-patterns: |
+              *UnitTest.*,
+              *IntegrationTest.*
+            paths: |
+              **/src/test/java/**,
+              **/src/test/scala/**
+            excludes: |
+              src/exclude_dir/*.py,
+              tests/exclude_file.py
             report-format: 'console'
             verbose-logging: 'false'
             fail-on-violation: 'false'
