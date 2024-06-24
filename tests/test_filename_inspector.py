@@ -11,7 +11,7 @@ from src.filename_inspector import get_action_input, set_action_output, set_acti
 
 # Constants
 DEFAULT_NAME_PATTERNS = '*UnitTest.*,*IntegrationTest.*'
-PATHS = '**/src/test/**'
+PATHS = '**/src/test/**,**/src/xyz/**'
 PATHS_WITH_FILE = '**/src/test/**,**/src/xyz/**/*.txt'
 EXCLUDES_EMPTY = ''
 EXCLUDES = '*src/exclude_dir/*,*ttests.java,*java/test1.java'
@@ -118,12 +118,12 @@ def test_set_failed():
 
 @pytest.mark.parametrize(
     "paths, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message", [
-    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, None, None),     # default values
+    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 6, None, None),     # default values
     (PATHS_WITH_FILE, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 6, None, None),
-    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_TRUE, EXCLUDES, FAIL_ON_VIOLATION_FALSE, 2, None, None),
-    (PATHS, REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, 'violations.csv', None),
-    (PATHS, REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, 'violations.json', None),
-    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_TRUE, 4, None, 'There are 4 test file naming convention violations.')
+    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_TRUE, EXCLUDES, FAIL_ON_VIOLATION_FALSE, 4, None, None),
+    (PATHS, REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 6, 'violations.csv', None),
+    (PATHS, REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 6, 'violations.json', None),
+    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_TRUE, 6, None, 'There are 6 test file naming convention violations.')
 ])
 def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message):
     def getenv_mock(key, default=''):
