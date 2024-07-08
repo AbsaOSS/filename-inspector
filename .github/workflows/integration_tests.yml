@@ -108,7 +108,7 @@ jobs:
             */test*.py,
             */src/test/java/*Unittest*.py,
             */src/test/java/*Tests.py,
-            */src/test/java/AnotherUnittests.py,
+            */src/test/java/AnotherUnittests.py
           report-format: 'console'
           verbose-logging: 'true'
           fail-on-violation: 'true'
