@@ -29,7 +29,7 @@ jobs:
 
       - name: Test 1 - Filename Inspector Default
         id: test_1
-        uses: AbsaOSS/filename-inspector@${{ env.branch }}
+        uses: AbsaOSS/filename-inspector@${{ needs.determine-branch.outputs.branch }}
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
