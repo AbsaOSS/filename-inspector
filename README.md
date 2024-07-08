@@ -22,17 +22,17 @@ This action scans the specified `paths` for project files and checks if their fi
 
 ## Inputs
 ### `name-patterns`
-- **Description**: List of file name patterns (not support `**`) that project files should have, separated by commas.
+- **Description**: List of file name patterns that project files should fit, separated by commas. Supports [fnmatch pattern](https://docs.python.org/3/library/fnmatch.html).
 - **Required**: Yes
 - **Example**: `*UnitTest.*,*IntegrationTest.*`
 
 ### `paths`
-- **Description**: List of paths to include in the glob pattern check (support `**`), separated by commas.
+- **Description**: List of paths to include in the scan, separated by commas. Supports the [glob pattern](https://code.visualstudio.com/docs/editor/glob-patterns).
 - **Required**: Yes
 - **Example**: `**/src/test/java/**,**/src/test/scala/**/*.txt`
 
 ### `excludes`
-- **Description**: List of filenames to exclude from pattern checks (not support `**`), separated by commas.
+- **Description**: List of filenames to exclude from name-pattern checks, separated by commas. Support [fnmatch pattern](https://docs.python.org/3/library/fnmatch.html).
 - **Required**: No
 - **Default**: ``
 

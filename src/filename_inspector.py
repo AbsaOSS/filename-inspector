@@ -4,6 +4,7 @@ import logging
 import os
 import json
 import csv
+from typing import Optional
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -17,9 +18,19 @@ INPUT_VERBOSE_LOGGING = "INPUT_VERBOSE_LOGGING"
 INPUT_FAIL_ON_VIOLATION = "INPUT_FAIL_ON_VIOLATION"
 
 
-def get_action_input(name: str) -> str:
+def get_action_list_input(name: str, lower: bool = True) -> list[str]:
     # Note: this is cleanup when input defined by multiple lines
-    return os.getenv(name).replace("\n", "")
+    value = os.getenv(name)
+    if value is None:
+        return []
+    return value.replace("\n", "").split(',')
+
+
+def get_action_input(name: str, lower: bool = True) -> Optional[str]:
+    # Note: this is cleanup when input defined by multiple lines
+    if value := os.getenv(name):
+        return value.lower() if lower else value
+    return None
 
 
 def set_action_output(name: str, value: str, default_output_path: str = "default_output.txt"):
@@ -52,15 +63,12 @@ def find_non_matching_files(name_patterns, paths, excludes):
 
 def run():
     try:
-        name_patterns_raw = get_action_input(INPUT_NAME_PATTERNS)
-        name_patterns = name_patterns_raw.split(',') if name_patterns_raw else []
-        paths_raw = get_action_input(INPUT_PATHS)
-        paths = paths_raw.split(',')
-        excludes_raw = get_action_input(INPUT_EXCLUDES)
-        excludes = excludes_raw.split(',')
-        report_format = get_action_input(INPUT_REPORT_FORMAT).lower()
-        verbose_logging = get_action_input(INPUT_VERBOSE_LOGGING).lower() == 'true'
-        fail_on_violation = get_action_input(INPUT_FAIL_ON_VIOLATION).lower() == 'true'
+        name_patterns = get_action_list_input(INPUT_NAME_PATTERNS)
+        paths = get_action_list_input(INPUT_PATHS)
+        excludes = get_action_list_input(INPUT_EXCLUDES)
+        report_format = get_action_input(INPUT_REPORT_FORMAT)
+        verbose_logging = get_action_input(INPUT_VERBOSE_LOGGING) == 'true'
+        fail_on_violation = get_action_input(INPUT_FAIL_ON_VIOLATION) == 'true'
 
         if verbose_logging:
             logging.getLogger().setLevel(logging.DEBUG)
