@@ -42,18 +42,18 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const violationCount = parseInt(`${{ steps.test_1.outputs.violation-count }}`);
+            const violationCount = parseInt('${{ steps.test_1.outputs.violation-count }}');
             console.log(`Test 1 violation count: ${violationCount}`);
             if (violationCount !== 5) {
-              core.setFailed("Wrong amount '${violationCount}' of violations detected in 'Test 1'");
+              core.setFailed(`Wrong amount '${violationCount}' of violations detected in 'Test 1'`);
             }
 
       - name: Check output violation count from Test 2
         uses: actions/github-script@v7
         with:
           script: |
-            const violationCount = parseInt(`${{ steps.test_2.outputs.violation-count }}`);
+            const violationCount = parseInt('${{ steps.test_2.outputs.violation-count }}');
             console.log(`Test 2 violation count: ${violationCount}`);
             if (violationCount !== 5) {
-              core.setFailed("Wrong amount '${violationCount}' of violations detected in 'Test 2'");
+              core.setFailed(`Wrong amount '${violationCount}' of violations detected in 'Test 2'`);
             }
