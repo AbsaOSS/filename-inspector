@@ -2,6 +2,9 @@ name: Run Unit Tests
 
 on:
   pull_request:
+    branches:
+      - '**'
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   run-tests:
