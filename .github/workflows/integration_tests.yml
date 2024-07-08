@@ -43,12 +43,9 @@ jobs:
         with:
           script: |
             const violationCount = parseInt('${{ steps.test_1.outputs.violation-count }}');
-            const violationCount2 = parseInt("${{ steps.test_1.outputs.violation-count }}");
-            const violationCount3 = parseInt(`${{ steps.test_1.outputs.violation-count }}`);
-            const violationCount4 = parseInt(`${{ steps.test_1.outputs['violation-count'] }}`);
             console.log(`Test 1 violation count: ${violationCount}`);
             if (violationCount !== 5) {
-              core.setFailed(`Wrong amount '${violationCount}' of violations detected in 'Test 1'`);
+              core.setFailed(`Wrong amount '${violationCount}' of violations detected in 'Test 1' (5 expected)`);
             }
 
       - name: Check output violation count from Test 2
@@ -58,5 +55,71 @@ jobs:
             const violationCount = parseInt('${{ steps.test_2.outputs.violation-count }}');
             console.log(`Test 2 violation count: ${violationCount}`);
             if (violationCount !== 5) {
-              core.setFailed(`Wrong amount '${violationCount}' of violations detected in 'Test 2'`);
+              core.setFailed(`Wrong amount '${violationCount}' of violations detected in 'Test 2' (5 expected)`);
+            }
+
+      - name: Test 3 - csv report
+        id: test_3
+        uses: AbsaOSS/filename-inspector@feature/fix-to-use-correct-syntax
+        with:
+          name-patterns: '*UnitTest.*,*IntegrationTest.*'
+          paths: '**/src/test/java/**,**/src/test/scala/**'
+          report-format: 'csv'
+
+      - name: Check output violation report path from Test 3
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reportPath = parseInt('${{ steps.test_3.outputs.report-path }}');
+            console.log(`Test 3 report path: ${reportPath}`);
+            if (reportPath !== 'violations.csv') {
+              core.setFailed(`Wrong report path value '${reportPath}' detected in 'Test 3'`);
+            }
+
+      - name: Test 4 - json report
+        id: test_4
+        uses: AbsaOSS/filename-inspector@feature/fix-to-use-correct-syntax
+        with:
+          name-patterns: '*UnitTest.*,*IntegrationTest.*'
+          paths: '**/src/test/java/**,**/src/test/scala/**'
+          report-format: 'json'
+
+      - name: Check output violation report path from Test 4
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reportPath = parseInt('${{ steps.test_4.outputs.report-path }}');
+            console.log(`Test 4 report path: ${reportPath}`);
+            if (reportPath !== 'violations.json') {
+              core.setFailed(`Wrong report path value '${reportPath}' detected in 'Test 4'`);
+            }
+
+      - name: Test 5 - custom with multiple line inputs
+        id: test_5
+        uses: AbsaOSS/filename-inspector@feature/fix-to-use-correct-syntax
+        with:
+          name-patterns: |
+            *UnitTest.*,
+            *IntegrationTest.*
+          paths: |
+            **/src/test/java/**,
+            **/src/test/scala/**
+          excludes: |
+            src/test/java/test1.py,
+            src/test/java/test2.py,
+            src/test/java/AnotherUnittest.py,
+            src/test/java/SomeUnitTests.py,
+            src/test/java/AnotherUnittests.py,
+          report-format: 'console'
+          verbose-logging: 'true'
+          fail-on-violation: 'true'
+
+      - name: Check output violation count from Test 5 - success
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const violationCount = parseInt('${{ steps.test_5.outputs.violation-count }}');
+            console.log(`Test 5 violation count: ${violationCount}`);
+            if (violationCount !== 0) {
+              core.setFailed(`Wrong amount '${violationCount}' of violations detected in 'Test 5' (0 expected)`);
             }
