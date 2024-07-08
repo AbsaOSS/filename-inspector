@@ -1,10 +1,8 @@
 name: Integration Tests
 
 on:
-  pull_request:
-    branches:
-      - '**'
-    types: [ opened, synchronize, reopened ]
+  workflow_dispatch:
+
 
 jobs:
   determine-branch:
@@ -29,7 +27,7 @@ jobs:
 
       - name: Test 1 - Filename Inspector Default
         id: test_1
-        uses: AbsaOSS/filename-inspector@${{ steps.get-branch.outputs.branch }}
+        uses: AbsaOSS/filename-inspector@feature/fix-to-use-correct-syntax
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
