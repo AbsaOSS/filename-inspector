@@ -14,15 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.7
 
-      - name: Test 1 - Filename Inspector Default
+      - name: Test 1 - default
         id: test_1
         uses: AbsaOSS/filename-inspector@feature/fix-to-use-correct-syntax
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
 
-      - name: Filename Inspector Full Custom
-        id: scan-test-files
+      - name: Test 2 - custom with multiple line inputs
+        id: test_2
         uses: AbsaOSS/filename-inspector@feature/fix-to-use-correct-syntax
         with:
           name-patterns: |
@@ -35,5 +35,21 @@ jobs:
             src/exclude_dir/*.py,
             tests/exclude_file.py
           report-format: 'console'
-          verbose-logging: 'false'
+          verbose-logging: 'true'
           fail-on-violation: 'false'
+
+      - name: Check output violation count from Test 1
+        run: |
+          echo "Test 1 violation count: ${{ steps.test_1.outputs.violation-count }}"
+          if [ "${{ steps.test_1.outputs.violation-count }}" != "5" ]; then
+            echo "Wrong amount of violations detected in 'Test 1'"
+            exit 1
+          fi          
+
+      - name: Check output violation count from Test 2
+        run: |
+          echo "Test 2 violation count: ${{ steps.test_2.outputs.violation-count }}"
+          if [ "${{ steps.test_2.outputs.violation-count }}" != "5" ]; then
+            echo "Wrong amount of violations detected in 'Test 2'"
+            exit 1
+          fi          
