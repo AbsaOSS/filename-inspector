@@ -26,10 +26,10 @@ inputs:
 outputs:
   violation-count:
     description: 'Count of files that do not comply with the specified file name conventions.'
-    value: ${{ steps.scan-test-files.outputs.violation-count }}
+    value: ${{ steps.filename-inspector.outputs.violation-count }}
   report-path:
     description: "Path to the generated report file. Not used when 'console' is selected as the report format."
-    value: ${{ steps.scan-test-files.outputs.report-path }}
+    value: ${{ steps.filename-inspector.outputs.report-path }}
 runs:
   using: 'composite'
   steps:
