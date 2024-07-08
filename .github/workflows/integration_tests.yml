@@ -2,6 +2,9 @@ name: Integration Tests
 
 on:
   pull_request:
+    branches:
+      - '**'
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   determine-branch:
@@ -16,20 +19,17 @@ jobs:
 
       - name: Get current branch
         id: get-branch
-        run: echo "::set-output name=branch::$(git rev-parse --abbrev-ref HEAD)"
+        run: echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
 
   run-tests:
+    needs: determine-branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.7
 
-      - name: Execute unit tests
-        run: |
-          pytest --cov=src --cov-report html tests/
-
       - name: Test 1 - Filename Inspector Default
         id: test_1
-        uses: AbsaOSS/filename-inspector@${{ needs.determine-branch.outputs.branch }}
+        uses: AbsaOSS/filename-inspector@${{ env.branch }}
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
