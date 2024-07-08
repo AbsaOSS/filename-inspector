@@ -43,6 +43,8 @@ jobs:
         with:
           script: |
             const violationCount = parseInt('${{ steps.test_1.outputs.violation-count }}');
+            const violationCount2 = parseInt("${{ steps.test_1.outputs.violation-count }}");
+            const violationCount3 = parseInt(`${{ steps.test_1.outputs.violation-count }}`);
             console.log(`Test 1 violation count: ${violationCount}`);
             if (violationCount !== 5) {
               core.setFailed(`Wrong amount '${violationCount}' of violations detected in 'Test 1'`);
