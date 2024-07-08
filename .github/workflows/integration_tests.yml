@@ -5,22 +5,7 @@ on:
 
 
 jobs:
-  determine-branch:
-    runs-on: ubuntu-latest
-
-    outputs:
-      branch: ${{ steps.get-branch.outputs.branch }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.7
-
-      - name: Get current branch
-        id: get-branch
-        run: echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
-
-  run-tests:
-    needs: determine-branch
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.7
