@@ -40,16 +40,18 @@ jobs:
 
       - name: Check output violation count from Test 1
         run: |
-          echo "Test 1 violation count: ${{ steps.test_1.outputs.violation-count }}"
-          if [ "${{ steps.test_1.outputs.violation-count }}" != "5" ]; then
+          violation_count="${{ steps.test_1.outputs.violation-count }}"
+          echo "Test 1 violation count: $violation-count"
+          if [ "$violation-count" != "5" ]; then
             echo "Wrong amount of violations detected in 'Test 1'"
             exit 1
           fi          
 
       - name: Check output violation count from Test 2
         run: |
-          echo "Test 2 violation count: ${{ steps.test_2.outputs.violation-count }}"
-          if [ "${{ steps.test_2.outputs.violation-count }}" != "5" ]; then
+          violation_count="${{ steps.test_2.outputs.violation-count }}"
+          echo "Test 2 violation count: $violation-count"
+          if [ "$violation-count" != "5" ]; then
             echo "Wrong amount of violations detected in 'Test 2'"
             exit 1
           fi          
