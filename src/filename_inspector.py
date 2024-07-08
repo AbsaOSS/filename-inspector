@@ -51,7 +51,14 @@ def find_non_matching_files(name_patterns, paths, excludes):
     for path in paths:
         for file in glob.glob(path, recursive=True):
             # Check if the file matches any of the exclude patterns
-            print(f"Checking file: {file}")
+            logging.debug(f"Checking file: {file}")
+            for e in excludes:
+                logging.debug(f"Checking exclude: {e}")
+                if fnmatch.fnmatch(file, e):
+                    logging.debug(f"Excluding file: {file}")
+                else:
+                    logging.debug(f"File not excluded: {file}")
+
             if any(fnmatch.fnmatch(file, e) for e in excludes):
                 continue
             # Check if the file matches any of the name patterns
