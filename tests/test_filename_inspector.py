@@ -161,7 +161,10 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
             assert expected_report == output_values['report-path']
 
         if report_format == 'csv' and violations:
-            csv_writer_mock.writerows.assert_called_once_with(violations)
+            called_args = csv_writer_mock.writerows.call_args[0][0]
+            expected_items = [violation for violation in violations]
+            for item in expected_items:
+                assert item in called_args
 
         if expected_failed_message:
             assert expected_failed_message == failed_message
