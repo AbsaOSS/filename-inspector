@@ -105,9 +105,10 @@ jobs:
             **/src/test/java/**,
             **/src/test/scala/**
           excludes: |
-            */ttest*.java,
+            */*ttest*.java,
             */src/test/java/*Unittest*.java,
             */src/test/java/*Tests.java,
+            */src/test/java/test*.java,
             */src/test/java/AnotherUnittests.java
           report-format: 'console'
           verbose-logging: 'true'
