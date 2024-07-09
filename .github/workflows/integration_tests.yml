@@ -105,10 +105,10 @@ jobs:
             **/src/test/java/**,
             **/src/test/scala/**
           excludes: |
-            */test*.py,
-            */src/test/java/*Unittest*.py,
-            */src/test/java/*Tests.py,
-            */src/test/java/AnotherUnittests.py
+            */ttest*.java,
+            */src/test/java/*Unittest*.java,
+            */src/test/java/*Tests.java,
+            */src/test/java/AnotherUnittests.java
           report-format: 'console'
           verbose-logging: 'true'
           fail-on-violation: 'true'
