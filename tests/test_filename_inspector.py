@@ -1,5 +1,3 @@
-import contextlib
-import io
 import tempfile
 from unittest import mock
 
@@ -23,11 +21,11 @@ VERBOSE_LOGGING_TRUE = 'true'
 FAIL_ON_VIOLATION_FALSE = 'false'
 FAIL_ON_VIOLATION_TRUE = 'true'
 VIOLATIONS = [
-    ['tests/data/src/test/java/test2.java'],
-    ['tests/data/src/test/java/AnotherUnittest.java'],
-    ['tests/data/src/test/java/SomeUnitTests.java'],
-    ['tests/data/src/xyz/file4.txt'],
-    ['tests/data/src/xyz/FileName5.txt']
+    'tests/data/src/test/java/test2.java',
+    'tests/data/src/test/java/AnotherUnittest.java',
+    'tests/data/src/test/java/SomeUnitTests.java',
+    'tests/data/src/xyz/file4.txt',
+    'tests/data/src/xyz/FileName5.txt'
 ]
 
 # Variables & parameters
@@ -162,9 +160,10 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
 
         if report_format == 'csv' and violations:
             called_args = csv_writer_mock.writerows.call_args[0][0]
-            expected_items = [violation for violation in violations]
-            for item in expected_items:
-                assert item in called_args
+            flatten_called_args = [sublist[0] for sublist in called_args]
+
+            for violation in violations:
+                assert violation in flatten_called_args
 
         if expected_failed_message:
             assert expected_failed_message == failed_message
