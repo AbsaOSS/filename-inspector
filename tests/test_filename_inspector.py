@@ -1,5 +1,19 @@
-import contextlib
-import io
+#
+# Copyright 2024 ABSA Group Limited
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import tempfile
 from unittest import mock
 
@@ -11,7 +25,7 @@ from src.filename_inspector import get_action_input, set_action_output, set_acti
 
 # Constants
 DEFAULT_NAME_PATTERNS = '*UnitTest.*,*IntegrationTest.*'
-PATHS = '**/src/test/**'
+PATHS = '**/src/test/**,**/src/xyz/**'
 PATHS_WITH_FILE = '**/src/test/**,**/src/xyz/**/*.txt'
 EXCLUDES_EMPTY = ''
 EXCLUDES = '*src/exclude_dir/*,*ttests.java,*java/test1.java'
@@ -22,6 +36,13 @@ VERBOSE_LOGGING_FALSE = 'false'
 VERBOSE_LOGGING_TRUE = 'true'
 FAIL_ON_VIOLATION_FALSE = 'false'
 FAIL_ON_VIOLATION_TRUE = 'true'
+VIOLATIONS = [
+    'tests/data/src/test/java/test2.java',
+    'tests/data/src/test/java/AnotherUnittest.java',
+    'tests/data/src/test/java/SomeUnitTests.java',
+    'tests/data/src/xyz/file4.txt',
+    'tests/data/src/xyz/FileName5.txt'
+]
 
 # Variables & parameters
 output_values = {}
@@ -117,15 +138,15 @@ def test_set_failed():
 
 
 @pytest.mark.parametrize(
-    "paths, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message", [
-    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, None, None),     # default values
-    (PATHS_WITH_FILE, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 6, None, None),
-    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_TRUE, EXCLUDES, FAIL_ON_VIOLATION_FALSE, 2, None, None),
-    (PATHS, REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, 'violations.csv', None),
-    (PATHS, REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 4, 'violations.json', None),
-    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_TRUE, 4, None, 'There are 4 test file naming convention violations.')
+    "paths, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message, violations", [
+    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 7, None, None, None),     # default values
+    (PATHS_WITH_FILE, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 7, None, None, None),
+    (PATHS, REPORT_FORMAT_CSV, VERBOSE_LOGGING_TRUE, EXCLUDES, FAIL_ON_VIOLATION_FALSE, 5, None, None, VIOLATIONS),
+    (PATHS, REPORT_FORMAT_CSV, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 7, 'violations.csv', None, None),
+    (PATHS, REPORT_FORMAT_JSON, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_FALSE, 7, 'violations.json', None, None),
+    (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_TRUE, 7, None, 'There are 7 test file naming convention violations.', None)
 ])
-def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message):
+def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message, violations):
     def getenv_mock(key, default=''):
         env = {
             'INPUT_NAME_PATTERNS': DEFAULT_NAME_PATTERNS,
@@ -138,12 +159,28 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
         return env.get(key, 'test_value')
 
     monkeypatch.setattr(os, 'getenv', getenv_mock)
+
+    # Patch csv.writer to capture written rows
+    csv_writer_mock = mock.Mock()
+
     with (patch('src.filename_inspector.set_action_output', new=mock_set_action_output),
-          patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed)):
+          patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed),
+          patch('csv.writer', return_value=csv_writer_mock)):
+
         run()
+
         assert str(expected_violation_count) == output_values['violation-count']
+
         if expected_report:
             assert expected_report == output_values['report-path']
+
+        if report_format == 'csv' and violations:
+            called_args = csv_writer_mock.writerows.call_args[0][0]
+            flatten_called_args = [sublist[0] for sublist in called_args]
+
+            for violation in violations:
+                assert violation in flatten_called_args
+
         if expected_failed_message:
             assert expected_failed_message == failed_message
 
