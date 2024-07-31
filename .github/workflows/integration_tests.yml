@@ -31,14 +31,14 @@ jobs:
 
       - name: Test 1 - default
         id: test_1
-        uses: AbsaOSS/filename-inspector@master
+        uses: ./action.yml
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
 
       - name: Test 2 - custom with multiple line inputs
         id: test_2
-        uses: AbsaOSS/filename-inspector@master
+        uses: ./action.yml
         with:
           name-patterns: |
             *UnitTest.*,
@@ -75,7 +75,7 @@ jobs:
 
       - name: Test 3 - csv report
         id: test_3
-        uses: AbsaOSS/filename-inspector@master
+        uses: ./action.yml
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
@@ -93,7 +93,7 @@ jobs:
 
       - name: Test 4 - json report
         id: test_4
-        uses: AbsaOSS/filename-inspector@master
+        uses: ./action.yml
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
@@ -111,7 +111,7 @@ jobs:
 
       - name: Test 5 - custom with multiple line inputs
         id: test_5
-        uses: AbsaOSS/filename-inspector@master
+        uses: ./action.yml
         with:
           name-patterns: |
             *UnitTest.*,
