@@ -18,7 +18,7 @@ INPUT_VERBOSE_LOGGING = "INPUT_VERBOSE_LOGGING"
 INPUT_FAIL_ON_VIOLATION = "INPUT_FAIL_ON_VIOLATION"
 
 
-def get_action_list_input(name: str, lower: bool = True) -> list[str]:
+def get_action_list_input(name: str) -> list[str]:
     # Note: this is cleanup when input defined by multiple lines
     value = os.getenv(name)
     if value is None:
@@ -26,11 +26,8 @@ def get_action_list_input(name: str, lower: bool = True) -> list[str]:
     return value.replace("\n", "").split(',')
 
 
-def get_action_input(name: str, lower: bool = True) -> Optional[str]:
-    # Note: this is cleanup when input defined by multiple lines
-    if value := os.getenv(name):
-        return value.lower() if lower else value
-    return None
+def get_action_input(name: str) -> Optional[str]:
+    return os.getenv(name)
 
 
 def set_action_output(name: str, value: str, default_output_path: str = "default_output.txt"):
