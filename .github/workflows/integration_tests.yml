@@ -1,7 +1,6 @@
 name: Integration Tests
 
 on:
-#  workflow_dispatch:
   pull_request:
     branches:
       - '**'
@@ -14,16 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.7
 
+      - name: Set up the action version
+        id: setup_version
+        run: echo "ref=${GITHUB_SHA}" >> $GITHUB_ENV
+
       - name: Test 1 - default
         id: test_1
-        uses: AbsaOSS/filename-inspector@master
+        uses: AbsaOSS/filename-inspector@${{ env.ref }}
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
 
       - name: Test 2 - custom with multiple line inputs
         id: test_2
-        uses: AbsaOSS/filename-inspector@master
+        uses: AbsaOSS/filename-inspector@${{ env.ref }}
         with:
           name-patterns: |
             *UnitTest.*,
@@ -60,7 +63,7 @@ jobs:
 
       - name: Test 3 - csv report
         id: test_3
-        uses: AbsaOSS/filename-inspector@master
+        uses: AbsaOSS/filename-inspector@${{ env.ref }}
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
@@ -78,7 +81,7 @@ jobs:
 
       - name: Test 4 - json report
         id: test_4
-        uses: AbsaOSS/filename-inspector@master
+        uses: AbsaOSS/filename-inspector@${{ env.ref }}
         with:
           name-patterns: '*UnitTest.*,*IntegrationTest.*'
           paths: '**/src/test/java/**,**/src/test/scala/**'
@@ -96,7 +99,7 @@ jobs:
 
       - name: Test 5 - custom with multiple line inputs
         id: test_5
-        uses: AbsaOSS/filename-inspector@master
+        uses: AbsaOSS/filename-inspector@${{ env.ref }}
         with:
           name-patterns: |
             *UnitTest.*,
