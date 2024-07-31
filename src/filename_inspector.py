@@ -43,7 +43,7 @@ def get_action_list_input(name: str) -> list[str]:
 
 
 def get_action_input(name: str) -> Optional[str]:
-    return os.getenv(name)
+    return os.getenv(name).lower()
 
 
 def set_action_output(name: str, value: str, default_output_path: str = "default_output.txt"):
