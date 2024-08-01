@@ -61,6 +61,8 @@ jobs:
               // No existing tags, so any new tag is valid
               console.log('No existing tags found. Any new tag is considered valid.');
               return;
+            } else {
+                console.log(`Existing tags: ${refs.map(ref => ref.ref.replace('refs/tags/', '')).join(', ')}`);
             }            
 
             const latestTag = refs.sort((a, b) => new Date(b.object.date) - new Date(a.object.date))[0].ref.replace('refs/tags/', '');
