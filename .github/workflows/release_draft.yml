@@ -23,8 +23,9 @@ on:
         required: true
 
 jobs:
-  tag:
+  check-tag:
     runs-on: ubuntu-latest
+    name: Check tag
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,11 +56,14 @@ jobs:
               repo: context.repo.repo,
               ref: 'tags/'
             });
-            console.log(`Existing tags: ${refs.map(ref => ref.ref.replace('refs/tags/', '')).join(', ')}`);
+
+            if (refs.length === 0) {
+              // No existing tags, so any new tag is valid
+              console.log('No existing tags found. Any new tag is considered valid.');
+              return;
+            }            
 
             const latestTag = refs.sort((a, b) => new Date(b.object.date) - new Date(a.object.date))[0].ref.replace('refs/tags/', '');
-            console.log(`Latest tag: ${latestTag}`);
-
             const latestVersion = latestTag.replace('v', '').split('.').map(Number);
             const newVersion = newTag.replace('v', '').split('.').map(Number);
 
@@ -75,33 +79,17 @@ jobs:
 
           tag-name: ${{ github.event.inputs.tagName }}
 
-      - name: Create and push tag
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const tag = core.getInput('tag-name')
-            const ref = `refs/tags/${tag}`;
-            const sha = context.sha; // The SHA of the commit to tag
-        
-            await github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: ref,
-              sha: sha
-            });
-        
-            console.log(`Tag created: ${tag}`);
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          tag-name: ${{ github.event.inputs.tagName }}
-
-  release:
-    needs: tag
+  generate-release-notes:
+    needs: check-tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: refs/tags/${{ github.event.inputs.tagName }}
+
+      - uses: actions/setup-python@v5.1.1
+        with:
+          python-version: '3.11'
 
       - name: Generate release notes
         id: generate_release_notes
@@ -110,22 +98,40 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag-name: ${{ github.event.inputs.tagName }}
-          chapters: |
-            [
+          chapters: '[
               {"title": "Breaking Changes 💥", "label": "breaking-change"},
               {"title": "New Features 🎉", "label": "feature"},
               {"title": "New Features 🎉", "label": "enhancement"},
               {"title": "Bugfixes 🛠", "label": "bug"}
-            ]
+            ]'
           warnings: true
 
-      - name: Create draft release
+      - name: Create and Push Tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = core.getInput('tag-name')
+            const ref = `refs/tags/${tag}`;
+            const sha = context.sha; // The SHA of the commit to tag
+
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: ref,
+              sha: sha
+            });
+
+            console.log(`Tag created: ${tag}`);
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          tag-name: ${{ github.event.inputs.tag-name }}
+
+      - name: Create Draft Release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ github.event.inputs.tagName }}
-          body: ${{ steps.generate_release_notes.outputs.releaseNotes }}
-          tag_name: ${{ github.event.inputs.tagName }}
+          name: ${{ github.event.inputs.tag-name }}
+          body: ${{ steps.generate_release_notes.outputs.release-notes }}
+          tag_name: ${{ github.event.inputs.tag-name }}
           draft: true
           prerelease: false
