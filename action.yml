@@ -30,6 +30,11 @@ outputs:
   report-path:
     description: "Path to the generated report file. Not used when 'console' is selected as the report format."
     value: ${{ steps.filename-inspector.outputs.report-path }}
+
+branding:
+  icon: 'book'
+  color: 'yellow'
+
 runs:
   using: 'composite'
   steps:
