@@ -33,6 +33,8 @@ INPUT_REPORT_FORMAT = "INPUT_REPORT_FORMAT"
 INPUT_VERBOSE_LOGGING = "INPUT_VERBOSE_LOGGING"
 INPUT_FAIL_ON_VIOLATION = "INPUT_FAIL_ON_VIOLATION"
 
+RUNNER_DEBUG = "RUNNER_DEBUG"
+
 
 def get_action_list_input(name: str) -> list[str]:
     # Note: this is cleanup when input defined by multiple lines
@@ -90,7 +92,7 @@ def run():
         verbose_logging = get_action_input(INPUT_VERBOSE_LOGGING) == 'true'
         fail_on_violation = get_action_input(INPUT_FAIL_ON_VIOLATION) == 'true'
 
-        if verbose_logging:
+        if os.getenv(RUNNER_DEBUG, 0) or verbose_logging:
             logging.getLogger().setLevel(logging.DEBUG)
 
         logging.debug(f'Name patterns: {name_patterns}')
