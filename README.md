@@ -49,7 +49,7 @@ This action scans the specified `paths` for project files and checks if their fi
 - **Description**: Enable verbose logging to provide detailed output during the action’s execution, aiding in troubleshooting and setup.
 - **Required**: No
 - **Default**: `false`
-- **Note**: If workflow run in debug regime, 'verbose-logging' is set to 'true.'
+- **Note**: If workflow run in debug mode, 'verbose-logging' is set to 'true.'
 
 ### `fail-on-violation`
 - **Description**: Set to true to fail the action if any convention violations are detected. Set false to continue without failure.
