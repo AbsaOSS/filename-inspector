@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Test 1 - default
         id: test_1
