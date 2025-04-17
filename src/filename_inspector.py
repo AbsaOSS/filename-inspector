@@ -212,7 +212,10 @@ def run() -> None:
     except KeyError as error:
         logging.error("Key error: %s", error)
         set_action_failed(f"Action failed with KeyError: {error}")
-
+    # pylint: disable=W0718
+    except Exception as error:
+        logging.error("An unexpected error occurred: %s", error)
+        set_action_failed(f"Action failed with an unexpected error: {error}")
 
 if __name__ == "__main__":
     run()
