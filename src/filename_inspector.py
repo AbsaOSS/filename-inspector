@@ -217,5 +217,6 @@ def run() -> None:
         logging.error("An unexpected error occurred: %s", error)
         set_action_failed(f"Action failed with an unexpected error: {error}")
 
+
 if __name__ == "__main__":
     run()
