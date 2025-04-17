@@ -15,7 +15,7 @@
 #
 
 
-name: Run Unit Tests
+name: Run Tests
 
 on:
   pull_request:
