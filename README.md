@@ -8,6 +8,9 @@
   - [Default](#default)
   - [Full example](#full-example)
 - [How To Build](#how-to-build)
+- [Running Static Code Analysis](#running-static-code-analysis)
+- [Run Black Tool Locally](#run-black-tool-locally)
+- [Run mypy Tool Locally](#run-mypy-tool-locally)
 - [Running Unit Tests](#running-unit-tests)
 - [Code Coverage](#code-coverage)
 - [Run Action Locally](#run-action-locally)
@@ -123,6 +126,107 @@ Install the dependencies:
 pip install -r requirements.txt
 ```
 
+## Running Static Code Analysis
+
+This project uses Pylint tool for static code analysis. Pylint analyses your code without actually running it. It checks for errors, enforces, coding standards, looks for code smells etc.
+
+Pylint displays a global evaluation score for the code, rated out of a maximum score of 10.0. We are aiming to keep our code quality high above the score 9.5.
+
+### Set Up Python Environment
+```shell
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+This command will also install a Pylint tool, since it is listed in the project requirements.
+
+### Run Pylint
+Run Pylint on all files that are currently tracked by Git in the project.
+```shell
+pylint $(git ls-files '*.py')
+```
+
+To run Pylint on a specific file, follow the pattern `pylint <path_to_file>/<name_of_file>.py`.
+
+Example:
+```shell
+pylint ./src/filename_inspector.py
+``` 
+
+## Run Black Tool Locally
+This project uses the [Black](https://github.com/psf/black) tool for code formatting.
+Black aims for consistency, generality, readability and reducing git diffs.
+The coding style used can be viewed as a strict subset of PEP 8.
+
+The project root file `pyproject.toml` defines the Black tool configuration.
+In this project we are accepting the line length of 120 characters.
+
+Follow these steps to format your code with Black locally:
+
+### Set Up Python Environment
+From terminal in the root of the project, run the following command:
+
+```shell
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+This command will also install a Black tool, since it is listed in the project requirements.
+
+### Run Black
+Run Black on all files that are currently tracked by Git in the project.
+```shell
+black $(git ls-files '*.py')
+```
+
+To run Black on a specific file, follow the pattern `black <path_to_file>/<name_of_file>.py`.
+
+Example:
+```shell
+black ./src/filename_inspector.py
+``` 
+
+### Expected Output
+This is the console expected output example after running the tool:
+```
+All done! ✨ 🍰 ✨
+1 file reformatted.
+```
+
+## Run mypy Tool Locally
+
+This project uses the [my[py]](https://mypy.readthedocs.io/en/stable/)
+tool which is a static type checker for Python.
+
+> Type checkers help ensure that you’re using variables and functions in your code correctly.
+> With mypy, add type hints (PEP 484) to your Python programs,
+> and mypy will warn you when you use those types incorrectly.
+my[py] configuration is in `pyproject.toml` file.
+
+Follow these steps to format your code with my[py] locally:
+
+### Run my[py]
+
+Run my[py] on all files in the project.
+```shell
+  mypy .
+```
+
+To run my[py] check on a specific file, follow the pattern `mypy <path_to_file>/<name_of_file>.py --check-untyped-defs`.
+
+Example:
+```shell
+   mypy src/filename_inspector.py
+``` 
+
+### Expected Output
+
+This is the console expected output example after running the tool:
+```
+Success: no issues found in 1 source file
+```
 
 ## Running Unit Tests
 Unit tests are written using pytest. To run the tests, use the following command:

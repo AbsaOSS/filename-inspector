@@ -147,7 +147,7 @@ def test_set_failed():
     (PATHS, REPORT_FORMAT_CONSOLE, VERBOSE_LOGGING_FALSE, EXCLUDES_EMPTY, FAIL_ON_VIOLATION_TRUE, 7, None, 'There are 7 test file naming convention violations.', None)
 ])
 def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_on_violation, expected_violation_count, expected_report, expected_failed_message, violations):
-    def getenv_mock(key, default=''):
+    def getenv_mock(key, default='0'):
         env = {
             'INPUT_NAME_PATTERNS': DEFAULT_NAME_PATTERNS,
             'INPUT_PATHS': paths,
@@ -156,7 +156,7 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
             'INPUT_VERBOSE_LOGGING': verbose_logging,
             'INPUT_FAIL_ON_VIOLATION': fail_on_violation
         }
-        return env.get(key, 'test_value')
+        return env.get(key, default)
 
     monkeypatch.setattr(os, 'getenv', getenv_mock)
 
@@ -186,10 +186,10 @@ def test_run(monkeypatch, paths, report_format, verbose_logging, excludes, fail_
 
 
 def test_run_exception_handling():
-    with patch('src.filename_inspector.get_action_input', side_effect=Exception('Test exception')), \
+    with patch('src.filename_inspector.get_action_input', side_effect=KeyError('Test exception')), \
             patch('src.filename_inspector.set_action_failed', new=mock_set_action_failed):
         run()
-        assert 'Action failed with error: Test exception' == failed_message
+        assert "Action failed with KeyError: 'Test exception'" == failed_message
 
 
 # Run the tests
