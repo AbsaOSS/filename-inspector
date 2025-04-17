@@ -23,7 +23,7 @@ import csv
 from typing import Optional
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 INPUT_NAME_PATTERNS = "INPUT_NAME_PATTERNS"
@@ -41,7 +41,7 @@ def get_action_list_input(name: str) -> list[str]:
     value = os.getenv(name)
     if value is None:
         return []
-    return value.replace("\n", "").split(',')
+    return value.replace("\n", "").split(",")
 
 
 def get_action_input(name: str) -> Optional[str]:
@@ -49,9 +49,9 @@ def get_action_input(name: str) -> Optional[str]:
 
 
 def set_action_output(name: str, value: str, default_output_path: str = "default_output.txt"):
-    output_file = os.getenv('GITHUB_OUTPUT', default_output_path)
-    with open(output_file, 'a') as f:
-        f.write(f'{name}={value}\n')
+    output_file = os.getenv("GITHUB_OUTPUT", default_output_path)
+    with open(output_file, "a") as f:
+        f.write(f"{name}={value}\n")
 
 
 def set_action_failed(message: str):
@@ -89,45 +89,45 @@ def run():
         paths = get_action_list_input(INPUT_PATHS)
         excludes = get_action_list_input(INPUT_EXCLUDES)
         report_format = get_action_input(INPUT_REPORT_FORMAT)
-        verbose_logging = get_action_input(INPUT_VERBOSE_LOGGING) == 'true'
-        fail_on_violation = get_action_input(INPUT_FAIL_ON_VIOLATION) == 'true'
+        verbose_logging = get_action_input(INPUT_VERBOSE_LOGGING) == "true"
+        fail_on_violation = get_action_input(INPUT_FAIL_ON_VIOLATION) == "true"
 
         if os.getenv(RUNNER_DEBUG, 0) or verbose_logging:
             logging.getLogger().setLevel(logging.DEBUG)
 
-        logging.debug(f'Name patterns: {name_patterns}')
-        logging.debug(f'Paths: {paths}')
-        logging.debug(f'Excludes: {excludes}')
-        logging.debug(f'Report format: {report_format}')
-        logging.debug(f'Fail on violations: {fail_on_violation}')
+        logging.debug(f"Name patterns: {name_patterns}")
+        logging.debug(f"Paths: {paths}")
+        logging.debug(f"Excludes: {excludes}")
+        logging.debug(f"Report format: {report_format}")
+        logging.debug(f"Fail on violations: {fail_on_violation}")
 
         violations = find_non_matching_files(name_patterns, paths, excludes)
         violation_count = len(violations)
 
-        set_action_output('violation-count', str(violation_count))
+        set_action_output("violation-count", str(violation_count))
 
-        logging.info(f'Total violations: {violation_count}')
+        logging.info(f"Total violations: {violation_count}")
 
-        if report_format == 'console' or verbose_logging:
-            logging.info(f'Violating files: {violations}')
+        if report_format == "console" or verbose_logging:
+            logging.info(f"Violating files: {violations}")
 
-        if report_format == 'csv':
-            with open('violations.csv', mode='w', newline='') as file:
+        if report_format == "csv":
+            with open("violations.csv", mode="w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerows([[violation] for violation in violations])
-            set_action_output('report-path', 'violations.csv')
-        elif report_format == 'json':
-            with open('violations.json', mode='w') as file:
-                json.dump({'violations': violations}, file)
-            set_action_output('report-path', 'violations.json')
+            set_action_output("report-path", "violations.csv")
+        elif report_format == "json":
+            with open("violations.json", mode="w") as file:
+                json.dump({"violations": violations}, file)
+            set_action_output("report-path", "violations.json")
 
         if fail_on_violation and violation_count > 0:
-            set_action_failed(f'There are {violation_count} test file naming convention violations.')
+            set_action_failed(f"There are {violation_count} test file naming convention violations.")
 
     except Exception as error:
-        logging.error(f'Action failed with error: {error}')
-        set_action_failed(f'Action failed with error: {error}')
+        logging.error(f"Action failed with error: {error}")
+        set_action_failed(f"Action failed with error: {error}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()
