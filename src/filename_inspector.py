@@ -188,7 +188,7 @@ def run() -> None:
         logging.info("Total violations: %s", violation_count)
 
         if report_format == "console" or verbose_logging:
-            logging.info("Violating files: %s", violations)
+            logging.warning("Violating files: %s", violations)
 
         if report_format == "csv":
             with open("violations.csv", mode="w", newline="", encoding="utf-8") as file:
