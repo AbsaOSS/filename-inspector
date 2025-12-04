@@ -27,13 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Check tag
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Validate format of received tag
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const newTag = core.getInput('tag-name');
@@ -46,7 +46,7 @@ jobs:
           tag-name: ${{ github.event.inputs.tag-name }}
 
       - name: Check tag's correct version increment
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const newTag = core.getInput('tag-name');
@@ -86,12 +86,12 @@ jobs:
     needs: check-tag
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/setup-python@v5.1.1
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
         with:
           python-version: '3.11'
 
@@ -111,7 +111,7 @@ jobs:
           warnings: true
 
       - name: Create and Push Tag
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const tag = core.getInput('tag-name')
@@ -130,7 +130,7 @@ jobs:
           tag-name: ${{ github.event.inputs.tag-name }}
 
       - name: Create Draft Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
