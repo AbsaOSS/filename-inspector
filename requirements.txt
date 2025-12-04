@@ -2,7 +2,7 @@ coverage==7.5.2
 pytest==8.4.2
 pytest-cov==7.0.0
 pylint==3.3.8
-black==25.1.0
+black==25.11.0
 mypy==1.19.0
 mypy-extensions==1.1.0
 types-requests==2.32.4.20250809
