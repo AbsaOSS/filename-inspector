@@ -3,6 +3,6 @@ pytest==8.4.2
 pytest-cov==6.3.0
 pylint==3.3.8
 black==25.1.0
-mypy==1.17.1
+mypy==1.19.0
 mypy-extensions==1.1.0
 types-requests==2.32.4.20250809
