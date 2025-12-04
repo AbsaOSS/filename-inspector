@@ -27,7 +27,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -57,7 +57,7 @@ jobs:
           fail-on-violation: 'false'
 
       - name: Check output violation count from Test 1
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const violationCount = parseInt('${{ steps.test_1.outputs.violation-count }}');
@@ -67,7 +67,7 @@ jobs:
             }
 
       - name: Check output violation count from Test 2
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const violationCount = parseInt('${{ steps.test_2.outputs.violation-count }}');
@@ -85,7 +85,7 @@ jobs:
           report-format: 'csv'
 
       - name: Check output violation report path from Test 3
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const reportPath = '${{ steps.test_3.outputs.report-path }}'
@@ -103,7 +103,7 @@ jobs:
           report-format: 'json'
 
       - name: Check output violation report path from Test 4
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const reportPath = '${{ steps.test_4.outputs.report-path }}'
@@ -133,7 +133,7 @@ jobs:
           fail-on-violation: 'true'
 
       - name: Check output violation count from Test 5 - success
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const violationCount = parseInt('${{ steps.test_5.outputs.violation-count }}');
