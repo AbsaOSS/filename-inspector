@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-name: Check PR Release Notes in Description
+name: Check PR Release Notes
 
 on:
   pull_request:
@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Check presence of release notes in PR description
         uses: AbsaOSS/release-notes-presence-check@8e586b26a5e27f899ee8590a5d988fd4780a3dbf
@@ -37,4 +37,6 @@ jobs:
         with:
           github-repository: ${{ github.repository }}
           pr-number: ${{ github.event.number }}
+          title: "## [Rr]elease [Nn]otes"
           skip-labels: 'no RN'
+          skip-placeholders: 'TBD'
