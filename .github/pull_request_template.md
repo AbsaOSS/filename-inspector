@@ -1,6 +1,11 @@
-> Add information about goal of Pull Request.
+<!-- What problem does it solve or what feature does it add? -->
+## Overview
 
----
-> **Note:** Remember to link this PR to the related issue by adding `Fixes #issue_number` to the description above.
+<!-- Summarize the key changes for release notes. -->
+## Release Notes
+- TBD: 1st item of release notes
+- TBD: 2nd item of release notes
 
+<!-- Add attached issue that this PR solves. -->
+## Related
 Closes #issue_number
