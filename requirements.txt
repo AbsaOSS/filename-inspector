@@ -1,7 +1,7 @@
 coverage==7.14.1
 pytest==9.1.0
 pytest-cov==7.1.0
-pylint==4.0.5
+pylint==4.0.6
 black==26.5.1
 mypy==2.1.0
 mypy-extensions==1.1.0
